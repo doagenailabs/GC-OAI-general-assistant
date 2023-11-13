@@ -23,7 +23,7 @@
     </div>
     <div id="chat-input-container">
         <input type="text" id="chat-input" placeholder="Type a message...">
-        <button id="send-button">Send</button>
+        <button id="openai-send-button">Send</button>
     </div>
 </div>
     <script>
@@ -51,18 +51,6 @@
                     const platformClient = await startGCSDKs();
                     window.platformClient = platformClient;
                     
-                    toggleContactAITab();
-                    await getUserId();
-                    await checkSupervisorAccess();
-            
-                    if (!window.supervisorAccess) {
-                        switchToSectionAndDisplayMessaging("no-permission");
-                        throw new Error("No Supervisor Access");
-                    }
-            
-                    await fetchConversationData();                    
-                    await initializeTranscriptionButton();
-                    await Redirect();
                 } catch (error) {
                     console.error('Error occurred:', error);
                 }
