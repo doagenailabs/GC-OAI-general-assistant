@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GC Assistant</title>
+    <script src="https://sdk-cdn.mypurecloud.com/javascript/173.1.0/purecloud-platform-client-v2.min.js"></script>
+    <script src="https://sdk-cdn.mypurecloud.com/client-apps/2.6.3/purecloud-client-app-sdk-de77761d.min.js"></script>
+    <script src="startGCSDKs.js"></script>
+    <script src="toast.js"></script>
+    <script src="getPlatformClient.js"></script>
+    <script src="auxUI.js"></script>
+    <script src="init.js"></script>
+    <script src="getSchemaOrWrapUps.js"></script>
+    <script src="autoWrapUp.js"></script>    
+    <script src="WSandVoiceTranscription.js"></script>
+    <script src="RTTmessaging.js"></script>   
+    <script src="digitalTranscription.js"></script>
+    <script src="sendToAI.js"></script>
+    <script src="create.js"></script>
+    <script src="contactHistory.js"></script> 
+    <script src="contactAI.js"></script>    
+    <script src="get.js"></script>
+    <script src="update.js"></script>
+    <script src="interactionEnd.js"></script>   
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body id="body">
+    <div class="container" id="existing-case-section" style="display: none;">
+       <div class="header smaller">Existing Case</div>
+        <div class="container">
+            <div class="left-section">
+                <div class="header smaller">Contact</div>
+                <div class="tabs">
+                    <button class="tab-button active" onclick="switchTab('left-section', 'Main')">Main</button>
+                    <button class="tab-button" onclick="switchTab('left-section', 'Details')">Details</button>
+                    <button class="tab-button" onclick="switchTab('left-section', 'History')">History</button>
+                    <button class="tab-button" id="contactAIButton" onclick="switchTab('left-section', 'AI')">AI</button>
+                </div>
+                <div class="tab-content" data-tab="Main" style="display: block;">
+                    <div class="input-group">
+                        <label>First Name</label>
+                        <input type="text" name="firstName">
+                    </div>
+                    <div class="input-group">
+                        <label>Last Name</label>
+                        <input type="text" name="lastName">
+                    </div>
+                    <div class="input-group">
+                        <label>Work Phone</label>
+                        <input type="text" name="workPhone">
+                    </div>
+                    <div class="input-group">
+                        <label>Work Email</label>
+                        <input type="text" name="workEmail">
+                    </div>
+                    <button class="save-button" onclick="updateExternalContact()" style="display: none;">Save</button>
+                </div>
+                <div class="tab-content" data-tab="Details" style="display: none;">
+                    <label>Other Phone</label>
+                    <input type="text" name="otherPhone">
+                    <label>Personal Email</label>
+                    <input type="text" name="personalEmail">
+                    <label>Address 1</label>
+                    <input type="text" name="address1">
+                    <label>City</label>
+                    <input type="text" name="city">
+                    <label>State</label>
+                    <input type="text" name="state">
+                    <label>Postal Code</label>
+                    <input type="text" name="postalCode">
+                    <label>Country Code</label>
+                    <input type="text" name="countryCode">
+                    <button class="save-button" onclick="updateExternalContact()" style="display: none;">Save</button>
+                </div>
+                <div class="tab-content" data-tab="AI" style="display: none;">
+                    <div class="input-group">
+                        <label>AI Strategy</label>
+                        <textarea name="Contact - AI Strategy" class="height-triple"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>AI Tags</label>
+                        <textarea name="Contact - AI Tags" readonly></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>AI Sentiment</label>
+                        <input type="number" name="Contact - AI Sentiment" readonly>
+                    </div>   
+                    <div class="input-group">
+                        <label>AI Churn</label>
+                        <input type="number" name="Contact - AI Churn" readonly>
+                    </div>
+                </div>   
+                <div class="tab-content" data-tab="History" style="display: none;">
+                    <!-- This container will hold the conversation history entries -->
+                </div>
+            </div>
+            <div class="middle-section">
+                <div class="header smaller">Case</div>
+                <div class="tabs">
+                    <button class="tab-button active" onclick="switchTab('middle-section', 'Main')">Main</button>
+                    <button class="tab-button" onclick="switchTab('middle-section', 'Details')">Details</button>
+                    <button class="tab-button" onclick="switchTab('middle-section', 'AI')">AI</button>
+                    <button class="tab-button" data-switch-tab="middle-section,Transcription" data-onclick-func="displayTranscripts" style="display: none;" onclick="handleButtonClick(this)">Transcription</button>
+                </div>
+                <div class="tab-content" data-tab="Main" style="display: block;">
+                    <div class="input-group">
+                        <label>Number</label>
+                        <input type="text" name="Number" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>Subject</label>
+                        <input type="text" name="Subject" >
+                    </div>
+                    <div class="input-group">
+                        <label>Description</label>
+                        <textarea name="Description" class="height-triple"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Status</label>
+                        <select name="Status"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Internal Comments</label>
+                        <textarea name="Internal Comments" class="height-triple"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Solution</label>
+                        <textarea name="Solution" class="height-triple"></textarea>
+                    </div>
+                    <button class="save-button" onclick="updateWorkItem()" style="display: none;">Save</button>
+                </div>
+                <div class="tab-content" data-tab="Details" style="display: none;">
+                    <div class="input-group">
+                        <label>Origin</label>
+                        <select name="Origin"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Reason</label>
+                        <select name="Reason"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Priority</label>
+                        <input type="text" name="Priority" >
+                    </div>
+                    <div class="input-group">
+                        <label>Product</label>
+                        <select name="Product"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Tag</label>
+                        <input type="text" name="Tag">
+                    </div>
+                    <div class="input-group">
+                        <label>Created Date</label>
+                        <input type="datetime-local" name="Created Date" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>Modified Date</label>
+                        <input type="datetime-local" name="Modified Date" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>Due Date</label>
+                        <input type="datetime-local" name="Due Date" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>Expiry Date</label>
+                        <input type="datetime-local" name="Expiry Date" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>SLA Violation</label>
+                        <input type="checkbox" name="SLA Violation" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label>Escalated</label>
+                        <input type="checkbox" name="Escalated">
+                    </div>
+                    <div class="input-group">
+                        <label>Workbin</label>
+                        <input type="text" name="Workbin" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>Worktype</label>
+                        <input type="text" name="Worktype" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>Auto status transition</label>
+                        <input type="text" name="Auto status transition" readonly>
+                    </div>
+                    <button class="save-button" onclick="updateWorkItem()" style="display: none;">Save</button>
+                </div>
+                <div class="tab-content" data-tab="AI" style="display: none;">
+                    <div class="input-group">
+                        <label>AI Proposed Solution</label>
+                        <textarea name="Case - AI Proposed Solution" class="height-triple"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>AI Summary</label>
+                        <textarea name="Case - AI Summary" class="height-triple"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>AI Tags</label>
+                        <textarea name="Case - AI Tags" readonly></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>AI Reason</label>
+                        <input type="text" name="Case - AI Reason" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>AI Product</label>
+                        <input type="text" name="Case - AI Product" readonly>
+                    </div>                    
+                    <div class="input-group">
+                        <label>AI Wrapup name</label>
+                        <input type="text" name="Case - AI Wrapup name" readonly>  
+                    </div> 
+                    <div class="input-group">
+                        <label>AI Sentiment</label>
+                        <input type="number" name="Case - AI Sentiment" readonly>
+                    </div>   
+                    <button class="save-button" onclick="updateWorkItem()" style="display: block;">Save</button>
+                </div>
+                <div class="tab-content" data-tab="Transcription" style="display: none;">
+                    <div class="container" id="transcript-display-container">
+                        <div class="chat-display" id="transcript-display">
+                            <!-- transcripts -->
+                        </div>
+                    </div>
+                </div>    
+            </div>
+            <div class="right-section">
+                <div class="header smaller knowledge-header">Knowledge</div>
+                <div class="knowledge-fields">
+                    <!-- This is where KB articles will be displayed -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="new-case-section" style="display: none;">
+        <div class="header smaller">New Case</div>
+            <div class="input-group">
+                <label>Subject</label>
+                <input type="text" name="Subject">
+            </div>
+            <div class="input-group">
+                <label>Description</label>
+                <textarea name="Description" class="height-triple"></textarea>
+            </div>
+            <div class="input-group">
+                <label>Priority</label>
+                <input type="text" name="Priority" placeholder="[Number]">
+            </div>
+            <div class="input-group">
+                <label>Origin</label>
+                <select name="Origin"></select>
+            </div>
+            <div class="input-group">
+                <label>Reason</label>
+                <select name="Reason"></select>
+            </div>
+            <div class="input-group">
+                <label>Product</label>
+                <select name="Product"></select>
+            </div>
+            <div class="input-group">
+                <button onclick="summarizeFromConversation()">AI Autofill</button>
+            </div>
+            <div class="input-group">
+                <button class="save-button" onclick="validateWorkItem()">Save</button>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="loading-section" style="display: block;">
+        <div class="loading-icon">
+            <div class="spinner"></div>
+        </div>
+    </div>
+    <div class="container" id="no-case-requested" style="display: none;">
+        <div class="header smaller">Notification</div>
+        <p>No case for this interaction, you can close this widget</p>
+    </div>    
+    <div class="container" id="no-permission" style="display: none;">
+        <div class="header smaller">Notification</div>
+        <p>You don't have permission to access this case</p>
+    </div>   
+    <div class="container" id="real-time-translation-messaging" style="display: none;">
+        <div class="header smaller">Real-Time Translation Messaging</div>
+        <div class="chat-area">
+            <div class="chat-display height-quadruple" id="messaging-chat-display">
+                <!-- messages -->
+            </div>
+            <div class="image-display" id="image-preview"></div> <!-- Placeholder for displaying selected image preview -->
+        </div>
+        <div class="typing-indicator" style="display: none;">Agent is typing...</div>
+        <textarea class="agent-response" placeholder="Type your response..."></textarea>
+        
+        <input type="file" id="image-upload" accept="image/jpeg, image/png, image/gif" onchange="previewImage()"> <!-- Added onchange event to preview selected image -->
+        
+        <button onclick="onSendMessageButtonClick()">Send</button>
+    </div>
+    <script>
+            function getConfig() {
+                return fetch('/api/getConfig')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Environment vars could not be retrieved');
+                        }
+                        return response.json();
+                    });
+            }
+        
+            function setWindowConfig(config) {
+                Object.keys(config).forEach(key => {
+                    window[key] = config[key];
+                });
+            }
+        
+            async function start() {
+                try {
+                    await getConfig()
+                    const config = await getConfig();
+                    setWindowConfig(config);
+                    const platformClient = await startGCSDKs();
+                    window.platformClient = platformClient;
+                    
+                    toggleContactAITab();
+                    await getUserId();
+                    await checkSupervisorAccess();
+            
+                    if (!window.supervisorAccess) {
+                        switchToSectionAndDisplayMessaging("no-permission");
+                        throw new Error("No Supervisor Access");
+                    }
+            
+                    await fetchConversationData();                    
+                    await initializeTranscriptionButton();
+                    await Redirect();
+                } catch (error) {
+                    console.error('Error occurred:', error);
+                }
+            }
+
+            start();
+    </script>
+</body>
+</html>
