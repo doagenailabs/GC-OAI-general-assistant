@@ -1,44 +1,121 @@
-// openaiAssistant.js
+async function getConfig() {
+    const response = await fetch('/api/getConfig');
+    if (!response.ok) {
+        throw new Error('Environment vars could not be retrieved');
+    }
+    return response.json();
+}
 
-async function sendMessageToOpenAI(message) {
+async function createThread() {
+    const config = await getConfig();
+    const response = await fetch('https://api.openai.com/v1/beta/threads', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${config.OAIApiKey}`,
+            'OpenAI-Beta': 'assistants=v1'
+        }
+    });
+    if (!response.ok) {
+        throw new Error('Failed to create thread');
+    }
+    return response.json();
+}
+
+async function sendMessage(threadId, message) {
+    const config = await getConfig();
+    const response = await fetch(`https://api.openai.com/v1/beta/threads/${threadId}/messages`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${config.OAIApiKey}`,
+            'OpenAI-Beta': 'assistants=v1',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            role: "user",
+            content: message
+        })
+    });
+    if (!response.ok) {
+        throw new Error('Failed to send message');
+    }
+    return response.json();
+}
+
+async function runAssistant(threadId) {
+    const config = await getConfig();
+    const response = await fetch(`https://api.openai.com/v1/beta/threads/${threadId}/runs`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${config.OAIApiKey}`,
+            'OpenAI-Beta': 'assistants=v1',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            assistant_id: config.AssistantID,
+        })
+    });
+    if (!response.ok) {
+        throw new Error('Failed to run assistant');
+    }
+    return response.json();
+}
+
+async function getAssistantResponse(threadId, runId) {
+    const config = await getConfig();
+    const response = await fetch(`https://api.openai.com/v1/beta/threads/${threadId}/runs/${runId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${config.OAIApiKey}`,
+            'OpenAI-Beta': 'assistants=v1'
+        }
+    });
+    if (!response.ok) {
+        throw new Error('Failed to get assistant response');
+    }
+    return response.json();
+}
+
+async function handleUserInput(userMessage) {
     try {
+        const thread = await createThread();
+        await sendMessage(thread.data.id, userMessage);
+        const run = await runAssistant(thread.data.id);
 
-        const config = await getConfig();
+        // Poll for the assistant's response
+        let assistantResponse;
+        do {
+            assistantResponse = await getAssistantResponse(thread.data.id, run.data.id);
+            // Implement a delay before polling again
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        } while (assistantResponse.data.status !== 'completed');
 
-        const requestBody = {
-            model: "text-davinci-003",
-            prompt: message,
-            max_tokens: 150
-        };
-
-
-        const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
-            method: 'POST',
+        // Process the assistant's messages
+        const messages = await fetch(`https://api.openai.com/v1/beta/threads/${thread.data.id}/messages`, {
+            method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${config.OAIApiKey}`
-            },
-            body: JSON.stringify(requestBody)
-        });
+                'Authorization': `Bearer ${config.OAIApiKey}`,
+                'OpenAI-Beta': 'assistants=v1'
+            }
+        }).then(response => response.json());
 
-        const data = await response.json();
-        return data.choices[0].text;
+        messages.data.forEach(message => {
+            if (message.role === "assistant") {
+                // Display the assistant's message
+                displayMessage(message.content);
+            }
+        });
     } catch (error) {
-        console.error('Error sending message to OpenAI:', error);
-        return "Sorry, I couldn't process your request.";
+        console.error('Error interacting with OpenAI Assistant:', error);
     }
 }
 
-document.getElementById('openai-send-button').addEventListener('click', async () => {
+function displayMessage(message) {
+    // Implement this function to display the message in your UI
+}
+
+document.getElementById('openai-send-button').addEventListener('click', () => {
     const inputElement = document.getElementById('openai-chat-input');
     const userMessage = inputElement.value;
     inputElement.value = '';
-
-    // Display user message in the chat window
-    // ...
-
-    const openaiResponse = await sendMessageToOpenAI(userMessage);
-
-    // Display OpenAI's response in the chat window
-    // ...
+    handleUserInput(userMessage);
 });
