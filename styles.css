@@ -6,19 +6,7 @@ body, html {
     background: linear-gradient(to bottom, #f5f7fa, #c8d6e5);
 }
 
-#logo-container {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1000;
-}
-
-#gc-logo {
-    height: 80px;
-    width: auto;
-}
-
-.chat-container {
+#chat-container {
     display: flex;
     flex-direction: column;
     height: 80vh;
@@ -30,7 +18,7 @@ body, html {
     background: #ffffff;
 }
 
-.chat-window {
+#chat-window {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
@@ -40,13 +28,13 @@ body, html {
     flex-direction: column;
 }
 
-.chat-input-container {
+#chat-input-container {
     display: flex;
     padding: 15px;
     background: #f7f7f7;
 }
 
-.chat-input {
+#chat-input {
     flex: 1;
     padding: 10px 15px;
     border-radius: 25px;
@@ -54,13 +42,13 @@ body, html {
     transition: border 0.3s, box-shadow 0.3s;
 }
 
-.chat-input:focus {
+#chat-input:focus {
     border-color: #007BFF;
     box-shadow: 0 0 15px rgba(0,123,255,0.5);
     outline: none;
 }
 
-.send-button {
+#send-button {
     margin-left: 15px;
     padding: 10px 20px;
     border: none;
@@ -71,13 +59,13 @@ body, html {
     transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
-.send-button:hover {
+#send-button:hover {
     background-color: #0056b3;
     transform: translateY(-3px);
     box-shadow: 0 5px 10px rgba(0,123,255,0.5);
 }
 
-.message {
+.sent-message, .received-message {
     margin-bottom: 15px;
     padding: 12px;
     border-radius: 25px;
@@ -86,6 +74,12 @@ body, html {
     animation: fadeInMove 0.5s forwards;
     width: 50%;
     transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+@keyframes fadeInMove {
+    to {
+    opacity: 1;
+    }
 }
 
 .sent-message {
@@ -94,57 +88,50 @@ body, html {
     color: #ffffff;
 }
 
+.sent-message:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,123,255,0.5);
+}
+
 .received-message {
     align-self: flex-start;
     background-color: #e6e6e6;
 }
 
-.message:hover {
+.received-message:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes fadeInMove {
-    to {
-        opacity: 1;
-    }
-}
-
 @media (max-width: 768px) {
-    .chat-window {
-        padding: 10px;
-    }
-
-    .chat-input {
-        padding: 5px;
-        font-size: 14px;
-    }
-
-    .send-button {
-        padding: 5px 10px;
-        font-size: 14px;
-    }
-
-    .message {
-        font-size: 14px;
-        padding: 8px;
-        width: 70%;
-    }
+    #chat-window {
+    padding: 10px;
 }
 
-/* Styles specific for OpenAI Chat Interface */
-#openai-chat-container .chat-window {
-    /* Additional or different styles if needed */
+#chat-input {
+    padding: 5px;
+    font-size: 14px;
 }
 
-#openai-chat-container .chat-input-container {
-    /* Additional or different styles if needed */
+#send-button {
+    padding: 5px 10px;
+    font-size: 14px;
 }
 
-#openai-chat-container .chat-input {
-    /* Additional or different styles if needed */
+.sent-message, .received-message {
+    font-size: 14px;
+    padding: 8px;
+    width: 70%;
 }
 
-#openai-chat-container .send-button {
-    /* Additional or different styles if needed */
+#logo-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+}
+
+#gc-logo {
+    height: 80px;
+    width: auto;
 }
