@@ -16,7 +16,7 @@ async function sendMessageToOpenAI(message) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${config.OPENAI_API_KEY}`
+                'Authorization': `Bearer ${config.OAIApiKey}`
             },
             body: JSON.stringify(requestBody)
         });
