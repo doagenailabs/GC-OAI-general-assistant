@@ -1,3 +1,5 @@
+import { deleteGenesysGroup } from './GCLogic.js';
+
 async function getConfig() {
     const response = await fetch('/api/getConfig');
     if (!response.ok) {
