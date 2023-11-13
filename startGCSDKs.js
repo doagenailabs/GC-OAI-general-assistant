@@ -2,7 +2,7 @@ function startGCSDKs() {
     const clientId = window.GCclientId;
     const console = window.console;
     return new Promise((resolve, reject) => {
-        const appName = 'GC CRM';
+        const appName = 'GC Assistant';
         const qParamLanguage = 'langTag';
         const qParamGcHostOrigin = 'gcHostOrigin';
         const qParamEnvironment = 'gcTargetEnv';
