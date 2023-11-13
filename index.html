@@ -23,40 +23,30 @@
     </div>
     <div id="chat-input-container">
         <input type="text" id="chat-input" placeholder="Type a message...">
-        <button id="openai-send-button">Send</button>
+        <button id="send-button">Send</button>
     </div>
 </div>
-    <script>
-            function getConfig() {
-                return fetch('/api/getConfig')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Environment vars could not be retrieved');
-                        }
-                        return response.json();
-                    });
-            }
-        
-            function setWindowConfig(config) {
-                Object.keys(config).forEach(key => {
-                    window[key] = config[key];
-                });
-            }
-        
-            async function start() {
-                try {
-                    await getConfig()
-                    const config = await getConfig();
-                    setWindowConfig(config);
-                    const platformClient = await startGCSDKs();
-                    window.platformClient = platformClient;
-                    
-                } catch (error) {
-                    console.error('Error occurred:', error);
-                }
-            }
 
-            start();
-    </script>
+<script type="module" src="main.js"></script>
+<script type="text/javascript" charset="utf-8">
+    async function getConfig() {
+        try {
+            const response = await fetch('/api/getConfig');
+            if (!response.ok) {
+                throw new Error('Environment vars could not be retrieved');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function initialize() {
+        const config = await getConfig();
+        const event = new CustomEvent('configLoaded', { detail: config });
+        document.dispatchEvent(event);
+    }
+    initialize();
+</script>
 </body>
 </html>
