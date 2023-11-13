@@ -109,6 +109,23 @@ async function handleUserInput(userMessage) {
     }
 }
 
+async function handleToolCalls(toolCalls, threadId, runId) {
+    for (const call of toolCalls) {
+        switch (call.function.name) {
+            case 'deleteGenesysGroup':
+                const groupId = JSON.parse(call.function.arguments).groupId;
+                await deleteGenesysGroup(groupId);
+                break;
+            // Add cases for other functions as needed
+        }
+    }
+
+    // After handling the tool calls, submit the outputs back to the assistant
+    const outputs = toolCalls.map(call => ({ tool_call_id: call.id, output: "Completed" }));
+    await openai.beta.threads.runs.submitToolOutputs(threadId, runId, { tool_outputs: outputs });
+}
+
+
 function displayMessage(message) {
     // Implement this function to display the message in your UI
 }
