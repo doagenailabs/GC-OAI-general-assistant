@@ -113,10 +113,12 @@ async function handleUserInput(userMessage) {
 
 async function handleToolCalls(toolCalls, threadId, runId) {
     for (const call of toolCalls) {
+        let resultMessage;
         switch (call.function.name) {
             case 'deleteGenesysGroup':
                 const groupId = JSON.parse(call.function.arguments).groupId;
-                await deleteGenesysGroup(groupId);
+                resultMessage = await deleteGenesysGroup(groupId);
+                displayMessage(resultMessage); // Display the result message in the UI
                 break;
             // Add cases for other functions as needed
         }
@@ -127,10 +129,13 @@ async function handleToolCalls(toolCalls, threadId, runId) {
     await openai.beta.threads.runs.submitToolOutputs(threadId, runId, { tool_outputs: outputs });
 }
 
-
 function displayMessage(message) {
-    // Implement this function to display the message in your UI
+    const chatWindow = document.getElementById('chat-window');
+    const messageElement = document.createElement('div');
+    messageElement.textContent = message;
+    chatWindow.appendChild(messageElement);
 }
+
 
 document.getElementById('openai-send-button').addEventListener('click', () => {
     const inputElement = document.getElementById('openai-chat-input');
