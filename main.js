@@ -6,101 +6,42 @@ async function getConfig() {
     return response.json();
 }
 
-async function createThread() {
-    const config = await getConfig();
-    const response = await fetch('https://api.openai.com/v1/beta/threads', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${config.OAIApiKey}`,
-            'OpenAI-Beta': 'assistants=v1'
-        }
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('send-button').addEventListener('click', () => {
+        const inputElement = document.getElementById('chat-input');
+        const userMessage = inputElement.value;
+        inputElement.value = '';
+        handleUserInput(userMessage);
     });
-    if (!response.ok) {
-        throw new Error('Failed to create thread');
-    }
-    return response.json();
-}
-
-async function sendMessage(threadId, message) {
-    const config = await getConfig();
-    const response = await fetch(`https://api.openai.com/v1/beta/threads/${threadId}/messages`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${config.OAIApiKey}`,
-            'OpenAI-Beta': 'assistants=v1',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            role: "user",
-            content: message
-        })
-    });
-    if (!response.ok) {
-        throw new Error('Failed to send message');
-    }
-    return response.json();
-}
-
-async function runAssistant(threadId) {
-    const config = await getConfig();
-    const response = await fetch(`https://api.openai.com/v1/beta/threads/${threadId}/runs`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${config.OAIApiKey}`,
-            'OpenAI-Beta': 'assistants=v1',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            assistant_id: config.AssistantID,
-        })
-    });
-    if (!response.ok) {
-        throw new Error('Failed to run assistant');
-    }
-    return response.json();
-}
-
-async function getAssistantResponse(threadId, runId) {
-    const config = await getConfig();
-    const response = await fetch(`https://api.openai.com/v1/beta/threads/${threadId}/runs/${runId}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${config.OAIApiKey}`,
-            'OpenAI-Beta': 'assistants=v1'
-        }
-    });
-    if (!response.ok) {
-        throw new Error('Failed to get assistant response');
-    }
-    return response.json();
-}
+});
 
 async function handleUserInput(userMessage) {
     try {
-        const thread = await createThread();
-        await sendMessage(thread.data.id, userMessage);
-        const run = await runAssistant(thread.data.id);
+        const thread = await fetch('/api/createThread').then(response => response.json());
+        await fetch('/api/sendMessage', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ threadId: thread.id, message: userMessage })
+        });
 
-        // Poll for the assistant's response
-        let assistantResponse;
-        do {
-            assistantResponse = await getAssistantResponse(thread.data.id, run.data.id);
-            // Implement a delay before polling again
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        } while (assistantResponse.data.status !== 'completed');
-
-        // Process the assistant's messages
-        const messages = await fetch(`https://api.openai.com/v1/beta/threads/${thread.data.id}/messages`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${config.OAIApiKey}`,
-                'OpenAI-Beta': 'assistants=v1'
-            }
+        const run = await fetch('/api/runAssistant', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ threadId: thread.id })
         }).then(response => response.json());
 
-        messages.data.forEach(message => {
+        let assistantResponse;
+        do {
+            assistantResponse = await fetch(`/api/getAssistantResponse?threadId=${thread.id}&runId=${run.id}`)
+                .then(response => response.json());
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        } while (assistantResponse.status !== 'completed');
+
+        const messages = await fetch(`/api/getMessages?threadId=${thread.id}`)
+            .then(response => response.json());
+
+        messages.forEach(message => {
             if (message.role === "assistant") {
-                // Display the assistant's message
                 displayMessage(message.content);
             }
         });
@@ -116,15 +57,18 @@ async function handleToolCalls(toolCalls, threadId, runId) {
             case 'deleteGenesysGroup':
                 const groupId = JSON.parse(call.function.arguments).groupId;
                 resultMessage = await deleteGenesysGroup(groupId);
-                displayMessage(resultMessage); // Display the result message in the UI
+                displayMessage(resultMessage);
                 break;
             // Add cases for other functions as needed
         }
     }
 
-    // After handling the tool calls, submit the outputs back to the assistant
     const outputs = toolCalls.map(call => ({ tool_call_id: call.id, output: "Completed" }));
-    await openai.beta.threads.runs.submitToolOutputs(threadId, runId, { tool_outputs: outputs });
+    await fetch(`/api/submitToolOutputs?threadId=${threadId}&runId=${runId}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ tool_outputs: outputs })
+    });
 }
 
 function displayMessage(message) {
@@ -134,26 +78,13 @@ function displayMessage(message) {
     chatWindow.appendChild(messageElement);
 }
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('send-button').addEventListener('click', () => {
-        const inputElement = document.getElementById('chat-input');
-        const userMessage = inputElement.value;
-        inputElement.value = '';
-        handleUserInput(userMessage);
-    });
-});
-
 async function deleteGenesysGroup(groupId) {
-    let apiInstance = new platformClient.GroupsApi();
-
     try {
-        await apiInstance.deleteGroup(groupId);
-        console.log("deleteGroup returned successfully.");
-        return "Group successfully deleted.";
-    } catch (err) {
-        console.log("There was a failure calling deleteGroup");
-        console.error(err);
+        const response = await fetch(`/api/deleteGenesysGroup?groupId=${groupId}`);
+        const result = await response.json();
+        return result.message;
+    } catch (error) {
+        console.error('Error in deleteGenesysGroup:', error);
         return "Failed to delete group.";
     }
 }
