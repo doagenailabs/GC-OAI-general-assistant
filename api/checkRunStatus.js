@@ -4,13 +4,15 @@ const openai = new OpenAI({
     apiKey: process.env.OAIApiKey
 });
 
-async function checkRunStatus(threadId, runId) {
+async function checkRunStatus(req, res) {
+    const { threadId, runId } = req.query;
+
     try {
         const runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
-        return runStatus;
+        res.json(runStatus);
     } catch (error) {
-        console.error(`Error in checkRunStatus:`, error.toString());
-        throw error;
+        console.error(`Error in checkRunStatus:`, error);
+        res.status(500).json({ error: error.message });
     }
 }
 
