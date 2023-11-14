@@ -12,38 +12,28 @@
 </head>
 <body>
     
-<div id="logo-container">
-    <img src="assets/images/GC_logo.png" alt="Genesys Cloud Logo" id="gc-logo">
-</div>
-
-<div id="chat-container">
-    <div id="chat-window">
-        <!-- Chat messages will be displayed here -->
+    <div id="logo-container">
+        <img src="assets/images/GC_logo.png" alt="Genesys Cloud Logo" id="gc-logo">
     </div>
-    <div id="chat-input-container">
-        <input type="text" id="chat-input" placeholder="Type a message...">
-        <button id="send-button">Send</button>
-    </div>
-</div>
-<script type="text/javascript" charset="utf-8">
-    async function getConfig() {
-        try {
-            const response = await fetch('/api/getConfig');
-            if (!response.ok) {
-                throw new Error('Environment vars could not be retrieved');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
-    async function initialize() {
-        const config = await getConfig();
-        const event = new CustomEvent('configLoaded', { detail: config });
-        document.dispatchEvent(event);
-    }
-    initialize();
-</script>
+    <div id="chat-container">
+        <div id="chat-window">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <div id="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Type a message...">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('send-button').addEventListener('click', () => {
+                const inputElement = document.getElementById('chat-input');
+                const userMessage = inputElement.value;
+                inputElement.value = '';
+                handleUserInput(userMessage);
+            });
+        });
+    </script>
 </body>
 </html>
