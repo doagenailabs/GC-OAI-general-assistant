@@ -1,20 +1,3 @@
-async function getConfig() {
-    const response = await fetch('/api/getConfig');
-    if (!response.ok) {
-        throw new Error('Environment vars could not be retrieved');
-    }
-    return response.json();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('send-button').addEventListener('click', () => {
-        const inputElement = document.getElementById('chat-input');
-        const userMessage = inputElement.value;
-        inputElement.value = '';
-        handleUserInput(userMessage);
-    });
-});
-
 async function handleUserInput(userMessage) {
     try {
         const thread = await fetch('/api/createThread').then(response => response.json());
