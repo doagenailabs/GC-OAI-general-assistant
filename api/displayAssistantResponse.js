@@ -4,13 +4,15 @@ const openai = new OpenAI({
     apiKey: process.env.OAIApiKey
 });
 
-async function displayAssistantResponse(threadId) {
+async function displayAssistantResponse(req, res) {
+    const { threadId } = req.query;
+
     try {
         const messages = await openai.beta.threads.messages.list(threadId);
-        return messages;
+        res.json(messages);
     } catch (error) {
-        console.error(`Error in displayAssistantResponse:`, error.toString());
-        throw error;
+        console.error(`Error in displayAssistantResponse:`, error);
+        res.status(500).json({ error: error.message });
     }
 }
 
