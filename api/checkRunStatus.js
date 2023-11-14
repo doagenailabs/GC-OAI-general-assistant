@@ -1,7 +1,7 @@
 const OpenAI = require('openai');
 
 const openai = new OpenAI({
-    apiKey: process.env.OAIApiKey
+    process.env.OPENAI_API_KEY
 });
 
 async function checkRunStatus(req, res) {
