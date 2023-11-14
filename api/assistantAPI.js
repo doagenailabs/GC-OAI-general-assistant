@@ -4,95 +4,70 @@ const openai = new OpenAI({
     apiKey: process.env.OAIApiKey
 });
 
-async function createThread() {
-    const emptyThread = await openai.beta.threads.create();
-    return emptyThread;
+async function handleThreadOperations(req, res) {
+    try {
+        const { operation, threadId, assistantId, message, messageId, metadata, runId, toolOutputs } = req.body;
+
+        let response;
+        switch (operation) {
+            case 'createThread':
+                response = await openai.beta.threads.create();
+                break;
+            case 'sendMessage':
+                response = await openai.beta.threads.messages.create(threadId, {
+                    role: "user",
+                    content: message
+                });
+                break;
+            case 'runAssistant':
+                response = await openai.beta.threads.runs.create(threadId, { assistant_id: assistantId });
+                break;
+            case 'getAssistantResponse':
+                response = await openai.beta.threads.runs.retrieve(threadId, runId);
+                break;
+            case 'retrieveThread':
+                response = await openai.beta.threads.retrieve(threadId);
+                break;
+            case 'modifyThread':
+                response = await openai.beta.threads.update(threadId, { metadata });
+                break;
+            case 'deleteThread':
+                response = await openai.beta.threads.del(threadId);
+                break;
+            case 'retrieveMessage':
+                response = await openai.beta.threads.messages.retrieve(threadId, messageId);
+                break;
+            case 'modifyMessage':
+                response = await openai.beta.threads.messages.update(threadId, messageId, { metadata });
+                break;
+            case 'listMessages':
+                response = await openai.beta.threads.messages.list(threadId);
+                break;
+            case 'listRuns':
+                response = await openai.beta.threads.runs.list(threadId);
+                break;
+            case 'modifyRun':
+                response = await openai.beta.threads.runs.update(threadId, runId, { metadata });
+                break;
+            case 'submitToolOutputsToRun':
+                response = await openai.beta.threads.runs.submitToolOutputs(threadId, runId, { tool_outputs: toolOutputs });
+                break;
+            case 'createThreadAndRun':
+                response = await openai.beta.threads.createAndRun({
+                    assistant_id: assistantId,
+                    thread: { messages: message }
+                });
+                break;
+            default:
+                throw new Error('Invalid operation');
+        }
+
+        console.log("Operation:", operation, "Response:", response);
+        res.json(response);
+    } catch (error) {
+        console.error(`Error in handleThreadOperations:`, error.toString());
+        res.status(500).json({ error: 'An error occurred while processing the thread operation', details: error.toString() });
+    }
 }
 
-async function sendMessage(threadId, message) {
-    const threadMessages = await openai.beta.threads.messages.create(threadId, {
-        role: "user",
-        content: message
-    });
-    return threadMessages;
-}
-
-async function runAssistant(threadId, assistantId) {
-    const run = await openai.beta.threads.runs.create(threadId, { assistant_id: assistantId });
-    return run;
-}
-
-async function getAssistantResponse(threadId, runId) {
-    const run = await openai.beta.threads.runs.retrieve(threadId, runId);
-    return run;
-}
-
-async function retrieveThread(threadId) {
-    const myThread = await openai.beta.threads.retrieve(threadId);
-    return myThread;
-}
-
-async function modifyThread(threadId, metadata) {
-    const updatedThread = await openai.beta.threads.update(threadId, { metadata });
-    return updatedThread;
-}
-
-async function deleteThread(threadId) {
-    const response = await openai.beta.threads.del(threadId);
-    return response;
-}
-
-async function retrieveMessage(threadId, messageId) {
-    const message = await openai.beta.threads.messages.retrieve(threadId, messageId);
-    return message;
-}
-
-async function modifyMessage(threadId, messageId, metadata) {
-    const updatedMessage = await openai.beta.threads.messages.update(threadId, messageId, { metadata });
-    return updatedMessage;
-}
-
-async function listMessages(threadId) {
-    const threadMessages = await openai.beta.threads.messages.list(threadId);
-    return threadMessages.data;
-}
-
-async function listRuns(threadId) {
-    const runs = await openai.beta.threads.runs.list(threadId);
-    return runs;
-}
-
-async function modifyRun(threadId, runId, metadata) {
-    const updatedRun = await openai.beta.threads.runs.update(threadId, runId, { metadata });
-    return updatedRun;
-}
-
-async function submitToolOutputsToRun(threadId, runId, toolOutputs) {
-    const run = await openai.beta.threads.runs.submitToolOutputs(threadId, runId, { tool_outputs: toolOutputs });
-    return run;
-}
-
-async function createThreadAndRun(assistantId, messages) {
-    const run = await openai.beta.threads.createAndRun({
-        assistant_id: assistantId,
-        thread: { messages }
-    });
-    return run;
-}
-
-module.exports = {
-    createThread,
-    sendMessage,
-    runAssistant,
-    getAssistantResponse,
-    retrieveThread,
-    modifyThread,
-    deleteThread,
-    retrieveMessage,
-    modifyMessage,
-    listMessages,
-    listRuns,
-    modifyRun,
-    submitToolOutputsToRun,
-    createThreadAndRun
-};
+module.exports = { handleThreadOperations };
