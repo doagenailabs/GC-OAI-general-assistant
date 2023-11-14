@@ -1,12 +1,16 @@
 async function handleUserInput(userMessage) {
     try {
+        // Create a Thread
         const thread = await fetch('/api/createThread').then(response => response.json());
-        await fetch('/api/sendMessage', {
+
+        // Add a Message to a Thread
+        await fetch('/api/addMessageToThread', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ threadId: thread.id, message: userMessage })
+            body: JSON.stringify({ threadId: thread.id, messageContent: userMessage })
         });
 
+        // Run the Assistant
         const run = await fetch('/api/runAssistant', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -15,17 +19,19 @@ async function handleUserInput(userMessage) {
 
         let assistantResponse;
         do {
-            assistantResponse = await fetch(`/api/getAssistantResponse?threadId=${thread.id}&runId=${run.id}`)
+            // Check the Run status
+            assistantResponse = await fetch(`/api/checkRunStatus?threadId=${thread.id}&runId=${run.id}`)
                 .then(response => response.json());
             await new Promise(resolve => setTimeout(resolve, 1000));
         } while (assistantResponse.status !== 'completed');
 
-        const messages = await fetch(`/api/getMessages?threadId=${thread.id}`)
+        // Display the Assistant's Response
+        const messages = await fetch(`/api/displayAssistantResponse?threadId=${thread.id}`)
             .then(response => response.json());
 
-        messages.forEach(message => {
+        messages.data.forEach(message => {
             if (message.role === "assistant") {
-                displayMessage(message.content);
+                displayMessage(message.content.text.value);
             }
         });
     } catch (error) {
