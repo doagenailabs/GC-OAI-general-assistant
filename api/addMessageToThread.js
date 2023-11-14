@@ -1,7 +1,9 @@
 const OpenAI = require('openai');
 
+const apiKey = process.env.OAI_API_KEY;
+
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: apiKey
 });
 
 async function addMessageToThread(req, res) {
