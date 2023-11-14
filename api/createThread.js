@@ -7,7 +7,7 @@ const openai = new OpenAI({
 async function createThread(req, res) {
     console.log('Creating thread...');
 
-    console.log(`API Key Length: ${process.env.OAIApiKey ? process.env.OAIApiKey.length : 'undefined'}`);
+    console.log(`API Key Length: ${apiKey ? apiKey.length : 'undefined'}`);
 
     try {
         const thread = await openai.beta.threads.create();
