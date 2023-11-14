@@ -135,11 +135,13 @@ function displayMessage(message) {
 }
 
 
-document.getElementById('openai-send-button').addEventListener('click', () => {
-    const inputElement = document.getElementById('openai-chat-input');
-    const userMessage = inputElement.value;
-    inputElement.value = '';
-    handleUserInput(userMessage);
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('openai-send-button').addEventListener('click', () => {
+        const inputElement = document.getElementById('openai-chat-input');
+        const userMessage = inputElement.value;
+        inputElement.value = '';
+        handleUserInput(userMessage);
+    });
 });
 
 async function deleteGenesysGroup(groupId) {
