@@ -1,8 +1,11 @@
 const OpenAI = require('openai');
 
+const apiKey = process.env.OAI_API_KEY;
+const assistantId = process.env.OPENAI_ASSISTANT_ID;
+
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    assistantId: process.env.OPENAI_ASSISTANT_ID
+    apiKey: apiKey,
+    assistantId: assistantId
 });
 
 async function runAssistant(req, res) {
