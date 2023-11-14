@@ -1,13 +1,12 @@
 const OpenAI = require('openai');
-const openai = new OpenAI({
-    apiKey: process.env.OAIApiKey
-});
+const openai = new OpenAI({ apiKey: process.env.OAIApiKey });
 
 async function createThread() {
     try {
-        return await openai.beta.threads.create();
+        const thread = await openai.beta.threads.create();
+        return thread;
     } catch (error) {
-        console.error(`Error in createThread:`, error.toString());
+        console.error('Error in createThread:', error.toString());
         throw error;
     }
 }
