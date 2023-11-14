@@ -4,7 +4,7 @@ const openai = new OpenAI({
     apiKey: process.env.OAIApiKey
 });
 
-async function createThread() {
+async function createThread(req, res) {
     console.log('Creating thread...');
 
     console.log(`API Key Length: ${process.env.OAIApiKey ? process.env.OAIApiKey.length : 'undefined'}`);
@@ -12,9 +12,12 @@ async function createThread() {
     try {
         const thread = await openai.beta.threads.create();
         console.log('Thread created:', thread);
-        return thread;
+
+
+        res.json(thread);
     } catch (error) {
         console.error(`Error in createThread:`, error);
+
 
         if (error.response) {
             console.error('Response:', error.response);
@@ -23,7 +26,7 @@ async function createThread() {
             console.error('Data:', error.response.data);
         }
 
-        throw error;
+        res.status(500).json({ error: error.message });
     }
 }
 
