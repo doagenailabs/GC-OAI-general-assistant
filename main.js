@@ -136,8 +136,8 @@ function displayMessage(message) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('openai-send-button').addEventListener('click', () => {
-        const inputElement = document.getElementById('openai-chat-input');
+    document.getElementById('send-button').addEventListener('click', () => {
+        const inputElement = document.getElementById('chat-input');
         const userMessage = inputElement.value;
         inputElement.value = '';
         handleUserInput(userMessage);
