@@ -6,6 +6,7 @@
     <title>GC Assistant</title>
     <script src="https://sdk-cdn.mypurecloud.com/javascript/173.1.0/purecloud-platform-client-v2.min.js"></script>
     <script src="https://sdk-cdn.mypurecloud.com/client-apps/2.6.3/purecloud-client-app-sdk-de77761d.min.js"></script>
+    <script src="main.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -22,8 +23,7 @@
             <button id="send-button">Send</button>
         </div>
     </div>
-
-    <script src="main.js"></script>
+    <button id="deleteConversationBtn">Delete Conversation</button>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('send-button').addEventListener('click', () => {
