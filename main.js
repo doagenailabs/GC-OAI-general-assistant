@@ -75,11 +75,22 @@ async function handleToolCalls(toolCalls, threadId, runId) {
     });
 }
 
-function displayMessage(message) {
+function displayMessage(message, isUserMessage) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
     messageElement.textContent = message;
+
+    if (isUserMessage) {
+        messageElement.classList.add('sent-message');
+    } else {
+        messageElement.classList.add('received-message');
+    }
+
     chatWindow.appendChild(messageElement);
+}
+
+function handleUserMessage(userMessage) {
+    displayMessage(userMessage, true); 
 }
 
 async function deleteGenesysGroup(groupId) {
