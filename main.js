@@ -1,14 +1,23 @@
+
 async function handleUserInput(userMessage) {
     try {
-        // Create a Thread
-        const thread = await fetch('/api/createThread').then(response => response.json());
-        console.log('Thread ID:', thread.id);
+        let threadId = localStorage.getItem('currentThreadId');
+
+        if (!threadId) {
+            // Create a Thread only if there isn't a current thread ID
+            const thread = await fetch('/api/createThread').then(response => response.json());
+            threadId = thread.id;
+            localStorage.setItem('currentThreadId', threadId); // Store the thread ID in localStorage
+            console.log('New Thread ID:', threadId);
+        } else {
+            console.log('Using existing Thread ID:', threadId);
+        }
 
         // Add a Message to a Thread
         await fetch('/api/addMessageToThread', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ threadId: thread.id, messageContent: userMessage })
+            body: JSON.stringify({ threadId: threadId, messageContent: userMessage })
         });
 
         // Run the Assistant
