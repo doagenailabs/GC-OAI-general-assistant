@@ -1,3 +1,23 @@
+async function loadExistingThread() {
+    const threadId = localStorage.getItem('currentThreadId');
+    if (threadId) {
+        try {
+            const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
+                .then(response => response.json());
+            
+            messages.data.forEach(message => {
+                const isUserMessage = message.role === "user";
+                message.content.forEach(contentPart => {
+                    if (contentPart.type === "text") {
+                        displayMessage(contentPart.text.value, isUserMessage);
+                    }
+                });
+            });
+        } catch (error) {
+            console.error('Error loading existing thread:', error);
+        }
+    }
+}
 
 async function handleUserInput(userMessage) {
     try {
@@ -41,10 +61,9 @@ async function handleUserInput(userMessage) {
         
         messages.data.forEach(message => {
             if (message.role === "assistant") {
-                // Iterate over the content array to find the text type content
                 message.content.forEach(contentPart => {
                     if (contentPart.type === "text") {
-                        displayMessage(contentPart.text.value);
+                        displayMessage(contentPart.text.value, false); // false for assistant message
                     }
                 });
             }
@@ -54,6 +73,25 @@ async function handleUserInput(userMessage) {
     }
 }
 
+function displayMessage(message, isUserMessage) {
+    const chatWindow = document.getElementById('chat-window');
+    const messageElement = document.createElement('div');
+    messageElement.textContent = message;
+
+    // Swap the styles for user and assistant messages
+    if (isUserMessage) {
+        messageElement.classList.add('received-message');
+    } else {
+        messageElement.classList.add('sent-message');
+    }
+
+    chatWindow.appendChild(messageElement);
+}
+
+function handleUserMessage(userMessage) {
+    displayMessage(userMessage, true); // true for user message
+}
+
 async function handleToolCalls(toolCalls, threadId, runId) {
     for (const call of toolCalls) {
         let resultMessage;
@@ -61,7 +99,7 @@ async function handleToolCalls(toolCalls, threadId, runId) {
             case 'deleteGenesysGroup':
                 const groupId = JSON.parse(call.function.arguments).groupId;
                 resultMessage = await deleteGenesysGroup(groupId);
-                displayMessage(resultMessage);
+                displayMessage(resultMessage, false); // false for assistant message
                 break;
             // Add cases for other functions as needed
         }
@@ -73,24 +111,6 @@ async function handleToolCalls(toolCalls, threadId, runId) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ tool_outputs: outputs })
     });
-}
-
-function displayMessage(message, isUserMessage) {
-    const chatWindow = document.getElementById('chat-window');
-    const messageElement = document.createElement('div');
-    messageElement.textContent = message;
-
-    if (isUserMessage) {
-        messageElement.classList.add('sent-message');
-    } else {
-        messageElement.classList.add('received-message');
-    }
-
-    chatWindow.appendChild(messageElement);
-}
-
-function handleUserMessage(userMessage) {
-    displayMessage(userMessage, true); 
 }
 
 async function deleteGenesysGroup(groupId) {
