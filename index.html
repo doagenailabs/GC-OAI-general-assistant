@@ -30,8 +30,11 @@
             document.getElementById('send-button').addEventListener('click', () => {
                 const inputElement = document.getElementById('chat-input');
                 const userMessage = inputElement.value;
-                inputElement.value = '';
-                handleUserInput(userMessage);
+                if (userMessage.trim() !== '') {
+                    handleUserMessage(userMessage);
+                    inputElement.value = '';
+                    handleUserInput(userMessage);
+                }
             });
         });
     </script>
