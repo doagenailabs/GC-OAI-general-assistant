@@ -2,6 +2,7 @@ async function handleUserInput(userMessage) {
     try {
         // Create a Thread
         const thread = await fetch('/api/createThread').then(response => response.json());
+        console.log('Thread ID:', thread.id);
 
         // Add a Message to a Thread
         await fetch('/api/addMessageToThread', {
