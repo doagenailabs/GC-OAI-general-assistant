@@ -1,13 +1,16 @@
 async function loadExistingThread() {
     const threadId = localStorage.getItem('currentThreadId');
-    let displayedMessageIds = JSON.parse(localStorage.getItem('displayedMessageIds')) || [];
+    const displayedMessageIds = JSON.parse(localStorage.getItem('displayedMessageIds') || '[]');
 
     if (threadId) {
         try {
             const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
                 .then(response => response.json());
 
-            messages.data.forEach(message => {
+            // Sort messages by created_at in ascending order
+            const sortedMessages = messages.data.sort((a, b) => a.created_at - b.created_at);
+
+            sortedMessages.forEach(message => {
                 if (!displayedMessageIds.includes(message.id)) {
                     const isUserMessage = message.role === "user";
                     message.content.forEach(contentPart => {
