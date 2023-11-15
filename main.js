@@ -1,25 +1,18 @@
 async function loadExistingThread() {
     const threadId = localStorage.getItem('currentThreadId');
-    const displayedMessageIds = JSON.parse(localStorage.getItem('displayedMessageIds') || '[]');
-
     if (threadId) {
         try {
-            const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
-                .then(response => response.json());
+            const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
+            const messages = await response.json();
 
-            messages.data.forEach(message => {
-                if (!displayedMessageIds.includes(message.id)) {
-                    const isUserMessage = message.role === "user";
-                    message.content.forEach(contentPart => {
-                        if (contentPart.type === "text") {
-                            displayMessage(contentPart.text.value, isUserMessage);
-                            displayedMessageIds.push(message.id);
-                        }
-                    });
-                }
+            messages.data.sort((a, b) => a.created_at - b.created_at).forEach(message => {
+                const isUserMessage = message.role === "user";
+                message.content.forEach(contentPart => {
+                    if (contentPart.type === "text") {
+                        displayMessage(contentPart.text.value, isUserMessage);
+                    }
+                });
             });
-
-            localStorage.setItem('displayedMessageIds', JSON.stringify(displayedMessageIds));
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
@@ -29,7 +22,6 @@ async function loadExistingThread() {
 async function handleUserInput(userMessage) {
     try {
         let threadId = localStorage.getItem('currentThreadId');
-        let displayedMessageIds = JSON.parse(localStorage.getItem('displayedMessageIds')) || [];
 
         if (!threadId) {
             // Create a Thread only if there isn't a current thread ID
@@ -66,19 +58,16 @@ async function handleUserInput(userMessage) {
         // Display the Assistant's Response
         const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
             .then(response => response.json());
-    
+        
         messages.data.forEach(message => {
-            if (message.role === "assistant" && !displayedMessageIds.includes(message.id)) {
+            if (message.role === "assistant") {
                 message.content.forEach(contentPart => {
                     if (contentPart.type === "text") {
                         displayMessage(contentPart.text.value, false); // false for assistant message
-                        displayedMessageIds.push(message.id);
                     }
                 });
             }
         });
-    
-        localStorage.setItem('displayedMessageIds', JSON.stringify(displayedMessageIds));
     } catch (error) {
         console.error('Error interacting with OpenAI Assistant:', error);
     }
