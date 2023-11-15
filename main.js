@@ -24,19 +24,19 @@ async function handleUserInput(userMessage) {
         const run = await fetch('/api/runAssistant', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ threadId: thread.id })
+            body: JSON.stringify({ threadId: threadId })
         }).then(response => response.json());
 
         let assistantResponse;
         do {
             // Check the Run status
-            assistantResponse = await fetch(`/api/checkRunStatus?threadId=${thread.id}&runId=${run.id}`)
+            assistantResponse = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
                 .then(response => response.json());
             await new Promise(resolve => setTimeout(resolve, 1000));
         } while (assistantResponse.status !== 'completed');
 
         // Display the Assistant's Response
-        const messages = await fetch(`/api/displayAssistantResponse?threadId=${thread.id}`)
+        const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
             .then(response => response.json());
         
         messages.data.forEach(message => {
