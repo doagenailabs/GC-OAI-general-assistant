@@ -6,8 +6,6 @@
     <title>GC Assistant</title>
     <script src="https://sdk-cdn.mypurecloud.com/javascript/173.1.0/purecloud-platform-client-v2.min.js"></script>
     <script src="https://sdk-cdn.mypurecloud.com/client-apps/2.6.3/purecloud-client-app-sdk-de77761d.min.js"></script>
-    <script src="startGCSDKs.js"></script>
-    <script src="main.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,7 +23,8 @@
         </div>
     </div>
 
-    <script type="text/javascript" charset="utf-8">
+    <script src="main.js"></script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('send-button').addEventListener('click', () => {
                 const inputElement = document.getElementById('chat-input');
@@ -37,7 +36,6 @@
                 }
             });
 
-            // Load existing thread on page load
             loadExistingThread();
         });
     </script>
