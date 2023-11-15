@@ -131,6 +131,20 @@ body, html {
     z-index: 1000;
 }
 
+#deleteConversationBtn {
+    padding: 10px;
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#deleteConversationBtn:hover {
+    background-color: darkblue;
+}
+
+
 #gc-logo {
     height: 80px;
     width: auto;
