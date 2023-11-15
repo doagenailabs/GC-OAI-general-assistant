@@ -7,10 +7,7 @@ async function loadExistingThread() {
             const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
                 .then(response => response.json());
 
-            // Sort messages by created_at in ascending order
-            const sortedMessages = messages.data.sort((a, b) => a.created_at - b.created_at);
-
-            sortedMessages.forEach(message => {
+            messages.data.forEach(message => {
                 if (!displayedMessageIds.includes(message.id)) {
                     const isUserMessage = message.role === "user";
                     message.content.forEach(contentPart => {
