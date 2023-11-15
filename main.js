@@ -29,10 +29,15 @@ async function handleUserInput(userMessage) {
         // Display the Assistant's Response
         const messages = await fetch(`/api/displayAssistantResponse?threadId=${thread.id}`)
             .then(response => response.json());
-
+        
         messages.data.forEach(message => {
             if (message.role === "assistant") {
-                displayMessage(message.content.text.value);
+                // Iterate over the content array to find the text type content
+                message.content.forEach(contentPart => {
+                    if (contentPart.type === "text") {
+                        displayMessage(contentPart.text.value);
+                    }
+                });
             }
         });
     } catch (error) {
