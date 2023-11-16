@@ -1,8 +1,6 @@
 const OpenAI = require('openai');
 
-const model = process.env.OPENAI_MODEL;
 const apiKey = process.env.OAI_API_KEY;
-
 const openai = new OpenAI({
     apiKey: apiKey
 });
@@ -20,19 +18,16 @@ async function submitToolOutputs(req, res) {
     }
 
     try {
-        // Construct messages based on tool outputs
         let toolResponseMessages = tool_outputs.map(output => ({
             role: "tool",
-            name: output.tool_call_id,
+            name: output.tool_call_id, 
             content: constructOutputMessage(output),
-            tool_call_id: output.tool_call_id
+            tool_call_id: output.tool_call_id // Linking to the original tool call
         }));
 
-        // Send the function responses back to the model
         const response = await openai.chat.completions.create({
-            model: model,
-            messages: toolResponseMessages,
-            thread_id: threadId
+            model: "gpt-3.5-turbo-1106",
+            messages: toolResponseMessages
         });
 
         res.json({ message: 'Function outputs submitted and response received from assistant', response: response.data });
@@ -44,7 +39,7 @@ async function submitToolOutputs(req, res) {
 
 function constructOutputMessage(output) {
     // Construct a message based on tool output
-    const message = JSON.stringify({ result: output.output });
+    const message = JSON.stringify({ result: output.output }); 
     return message;
 }
 
