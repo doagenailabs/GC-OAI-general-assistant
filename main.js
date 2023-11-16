@@ -47,7 +47,7 @@ async function handleUserInput(userMessage) {
         });
 
         // Run the Assistant
-        const run = await fetch('/api/runAssistant', {
+        let run = await fetch('/api/runAssistant', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ threadId: threadId })
@@ -58,6 +58,16 @@ async function handleUserInput(userMessage) {
             // Check the Run status
             assistantResponse = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
                 .then(response => response.json());
+
+            // Handle 'requires_action' status
+            if (assistantResponse.status === 'requires_action') {
+                // Perform required actions and submit tool outputs
+                await handleToolCalls(assistantResponse.required_action.submit_tool_outputs.tool_calls, threadId, run.id);
+                // Update the run status after submitting tool outputs
+                run = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
+                    .then(response => response.json());
+            }
+
             await new Promise(resolve => setTimeout(resolve, 1000));
         } while (assistantResponse.status !== 'completed');
 
