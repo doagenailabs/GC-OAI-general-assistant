@@ -1,16 +1,34 @@
 const OpenAI = require('openai');
 
-const openai = new OpenAI({ apiKey: process.env.OAI_API_KEY });
+const apiKey = process.env.OAI_API_KEY;
 
-router.delete('/api/deleteThread', async (req, res) => {
-    try {
-        const threadId = req.query.threadId;
-        await openai.beta.threads.del(threadId);
-        res.status(200).send('Thread deleted successfully');
-    } catch (error) {
-        console.error('Error deleting thread:', error);
-        res.status(500).send('Error deleting thread');
-    }
+const openai = new OpenAI({
+    apiKey: apiKey
 });
 
-module.exports = router;
+async function deleteThread(req, res) {
+    console.log('Deleting thread...');
+
+    try {
+        const response = await openai.beta.threads.del(threadId);
+        console.log('Thread deleted:', threadId);
+        console.log(response);
+
+
+        res.json(thread);
+    } catch (error) {
+        console.error(`Error in deleteThread:`, error);
+
+
+        if (error.response) {
+            console.error('Response:', error.response);
+            console.error('Status:', error.response.status);
+            console.error('Headers:', error.response.headers);
+            console.error('Data:', error.response.data);
+        }
+
+        res.status(500).json({ error: error.message });
+    }
+}
+
+module.exports = deleteThread;
