@@ -52,6 +52,7 @@
             setWindowConfig(config);
             const platformClient = await startGCSDKs();
             window.platformClient = platformClient;
+            window.lastAssistantMessageId = null;
 
             const sendButton = document.getElementById('send-button');
             const deleteConversationBtn = document.getElementById('deleteConversationBtn');
