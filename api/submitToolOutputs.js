@@ -1,6 +1,8 @@
 const OpenAI = require('openai');
 
+const model = process.env.OPENAI_MODEL;
 const apiKey = process.env.OAI_API_KEY;
+
 const openai = new OpenAI({
     apiKey: apiKey
 });
@@ -18,21 +20,22 @@ async function submitToolOutputs(req, res) {
     }
 
     try {
-        let responseMessages = [];
-        for (const output of tool_outputs) {
-            const outputMessage = constructOutputMessage(output);
-            console.log('Sending message to thread:', outputMessage);
+        // Construct messages based on tool outputs
+        let toolResponseMessages = tool_outputs.map(output => ({
+            role: "tool",
+            name: output.tool_call_id,
+            content: constructOutputMessage(output),
+            tool_call_id: output.tool_call_id
+        }));
 
-            const message = await openai.beta.threads.messages.create(threadId, {
-                role: "user",
-                content: outputMessage
-            });
+        // Send the function responses back to the model
+        const response = await openai.chat.completions.create({
+            model: model,
+            messages: toolResponseMessages,
+            thread_id: threadId
+        });
 
-            console.log('Message sent to thread:', message);
-            responseMessages.push(message);
-        }
-
-        res.json({ message: 'Tool outputs submitted and responses sent to assistant', threadId: threadId, runId: runId, responses: responseMessages });
+        res.json({ message: 'Function outputs submitted and response received from assistant', response: response.data });
     } catch (error) {
         console.error(`Error in submitToolOutputs:`, error);
         res.status(500).json({ error: error.message });
@@ -40,7 +43,8 @@ async function submitToolOutputs(req, res) {
 }
 
 function constructOutputMessage(output) {
-    const message = `Function ${output.tool_call_id} completed with result: ${output.output}`;
+    // Construct a message based on tool output
+    const message = JSON.stringify({ result: output.output });
     return message;
 }
 
