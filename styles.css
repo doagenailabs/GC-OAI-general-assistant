@@ -4,14 +4,21 @@ body, html {
     height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(to bottom, #f5f7fa, #c8d6e5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#logo-container {
+    margin: 10px 0;
 }
 
 #chat-container {
     display: flex;
     flex-direction: column;
-    height: 80vh;
+    max-height: calc(100vh - 20px - 80px);
     width: 70vw;
-    margin: 10vh auto;
+    margin: 10px 0;
     box-shadow: 0 15px 30px rgba(0,0,0,0.2);
     border-radius: 20px;
     overflow: hidden;
@@ -19,7 +26,7 @@ body, html {
 }
 
 #chat-window {
-    flex: 1;
+    flex-grow: 1;
     overflow-y: auto;
     padding: 20px;
     border-bottom: 1px solid #e6e6e6;
@@ -53,7 +60,7 @@ body, html {
     padding: 10px 20px;
     border: none;
     background-color: #007BFF;
-    color: #ffffff;
+    color: white;
     border-radius: 25px;
     cursor: pointer;
     transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
@@ -69,23 +76,23 @@ body, html {
     margin-bottom: 15px;
     padding: 12px;
     border-radius: 25px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     opacity: 0;
     animation: fadeInMove 0.5s forwards;
     width: 50%;
     transition: transform 0.2s, box-shadow 0.3s;
-    }
+}
 
 @keyframes fadeInMove {
     to {
-    opacity: 1;
+        opacity: 1;
     }
 }
 
 .sent-message {
     align-self: flex-end;
     background-color: #007BFF;
-    color: #ffffff;
+    color: white;
 }
 
 .sent-message:hover {
@@ -105,30 +112,35 @@ body, html {
 
 @media (max-width: 768px) {
     #chat-window {
-    padding: 10px;
-}
+        padding: 10px;
+    }
 
-#chat-input {
-    padding: 5px;
-    font-size: 14px;
-}
+    #chat-input {
+        padding: 5px;
+        font-size: 14px;
+    }
 
-#send-button {
-    padding: 5px 10px;
-    font-size: 14px;
-}
+    #send-button {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
 
-.sent-message, .received-message {
-    font-size: 14px;
-    padding: 8px;
-    width: 70%;
-}
+    .sent-message, .received-message {
+        font-size: 14px;
+        padding: 8px;
+        width: 70%;
+    }
 
-#logo-container {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1000;
+    #logo-container {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+    }
+
+    #chat-container {
+        max-height: calc(100vh - 20px - 60px);
+    }
 }
 
 #deleteConversationBtn {
@@ -143,7 +155,6 @@ body, html {
 #deleteConversationBtn:hover {
     background-color: darkblue;
 }
-
 
 #gc-logo {
     height: 80px;
