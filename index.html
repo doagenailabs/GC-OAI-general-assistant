@@ -36,24 +36,27 @@
                 }
             });
 
+            document.getElementById('deleteConversationBtn').addEventListener('click', async () => {
+                try {
+                    const currentThreadId = localStorage.getItem('currentThreadId');
+                    if (currentThreadId) {
+                        await fetch(`/api/deleteThread`, {
+                            method: 'DELETE',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ threadId: currentThreadId })
+                        });
+                        localStorage.removeItem('currentThreadId');
+                        console.log('Conversation deleted');
+                    }
+                    await handleUserInput(''); // Start a new conversation
+                    console.log('New conversation started');
+                } catch (error) {
+                    console.error('Error deleting conversation:', error);
+                }
+            });
+
             loadExistingThread();
         });
-
-        document.getElementById('deleteConversationBtn').addEventListener('click', async () => {
-            try {
-                const currentThreadId = localStorage.getItem('currentThreadId');
-                if (currentThreadId) {
-                    await fetch(`/api/deleteThread?threadId=${currentThreadId}`, { method: 'DELETE' });
-                    localStorage.removeItem('currentThreadId');
-                    console.log('Conversation deleted');
-                }
-                await handleUserInput('');
-                console.log('New conversation started');
-            } catch (error) {
-                console.error('Error deleting conversation:', error);
-            }
-        });
-        
     </script>
 </body>
 </html>
