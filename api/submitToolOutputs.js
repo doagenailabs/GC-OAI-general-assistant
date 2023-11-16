@@ -23,12 +23,12 @@ async function submitToolOutputs(req, res) {
             content: msg.content[0].type === 'text' ? msg.content[0].text.value : ''
         }));
 
-        // Append tool outputs as new messages to the conversation
+        // Update the corresponding tool call message with the outcome
         tool_outputs.forEach(output => {
-            reformattedMessages.push({
-                role: "tool",
-                content: constructOutputMessage(output)
-            });
+            const toolCallIndex = reformattedMessages.findIndex(msg => msg.role === 'tool' && msg.content.includes(output.tool_call_id));
+            if (toolCallIndex !== -1) {
+                reformattedMessages[toolCallIndex].content = constructOutputMessage(output);
+            }
         });
 
         // Send the updated conversation to the model
@@ -45,7 +45,7 @@ async function submitToolOutputs(req, res) {
 }
 
 function constructOutputMessage(output) {
-    // Construct a message that clearly indicates the completion of the tool action
+    // Include the result of the tool action in a format that the model can interpret
     return `Action completed: ${output.output}`;
 }
 
