@@ -21,12 +21,10 @@ async function submitToolOutputs(req, res) {
             content: msg.content[0].type === 'text' ? msg.content[0].text.value : ''
         }));
 
-        // Insert each tool output after the corresponding tool call
+        // Insert the tool responses at the correct positions in the conversation
         tool_outputs.forEach(output => {
-            // Find the index of the tool call
             const toolCallIndex = reformattedMessages.findIndex(msg => msg.content.includes(output.tool_call_id));
             if (toolCallIndex !== -1) {
-                // Insert the tool response after the tool call
                 const toolResponseMessage = {
                     role: "tool",
                     content: constructOutputMessage(output)
