@@ -12,7 +12,7 @@ async function handleToolCalls(toolCalls, threadId, runId) {
 
         const outputs = toolCalls.map(call => ({ tool_call_id: call.id, output: "Completed" }));
         
-        // Modified to send threadId and runId in the request body
+        // Send threadId and runId in the request body
         await fetch(`/api/submitToolOutputs`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -21,4 +21,4 @@ async function handleToolCalls(toolCalls, threadId, runId) {
     }
 }
 
-export { handleToolCalls };
+window.handleToolCalls = handleToolCalls;
