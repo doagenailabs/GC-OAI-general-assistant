@@ -23,15 +23,16 @@ async function submitToolOutputs(req, res) {
 
         console.log('Original messages:', reformattedMessages); // Log the original messages
 
-        // Insert the tool responses at the correct positions in the conversation
         tool_outputs.forEach(output => {
-            const toolCallIndex = reformattedMessages.findIndex(msg => msg.content.includes(output.tool_call_id));
+            // Locate the original tool call message
+            const toolCallIndex = reformattedMessages.findIndex(msg => msg.content === output.tool_call_id);
+
             if (toolCallIndex !== -1) {
-                const toolResponseMessage = {
+                // Update the tool call message with the tool response
+                reformattedMessages[toolCallIndex] = {
                     role: "tool",
                     content: constructOutputMessage(output)
                 };
-                reformattedMessages.splice(toolCallIndex + 1, 0, toolResponseMessage);
             }
         });
 
