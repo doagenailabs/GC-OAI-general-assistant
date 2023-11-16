@@ -24,32 +24,29 @@ async function loadExistingThread() {
 }
 
 async function handleUserInput(userMessage) {
-    showLoadingIcon(true); 
+    showLoadingIcon(true);
 
     try {
         let threadId = localStorage.getItem('currentThreadId');
 
         if (!threadId) {
-            // Create a Thread only if there isn't a current thread ID
             const thread = await fetch('/api/createThread').then(response => response.json());
             threadId = thread.id;
-            localStorage.setItem('currentThreadId', threadId); // Store the thread ID in localStorage
+            localStorage.setItem('currentThreadId', threadId);
             console.log('New Thread ID:', threadId);
         } else {
             console.log('Using existing Thread ID:', threadId);
         }
 
-        // Add a Message to a Thread
         await fetch('/api/addMessageToThread', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ threadId: threadId, messageContent: userMessage })
         });
 
-        // Run the Assistant
         let run = await fetch('/api/runAssistant', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ threadId: threadId })
         }).then(response => response.json());
 
@@ -60,7 +57,6 @@ async function handleUserInput(userMessage) {
 
             if (assistantResponse.status === 'requires_action') {
                 await handleToolCalls(assistantResponse.required_action.submit_tool_outputs.tool_calls, threadId, run.id);
-                // Update the run status after submitting tool outputs
                 run = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
                     .then(response => response.json());
             }
@@ -70,20 +66,18 @@ async function handleUserInput(userMessage) {
 
         const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
             .then(response => response.json());
-        
-        const displayedMessageIds = new Set(); // Set to track displayed message IDs
-        messages.data.filter(message => message.role === "assistant").forEach(lastAssistantMessage => {
-            if (!displayedMessageIds.has(lastAssistantMessage.id)) { // Check if the message ID is already displayed
-                displayedMessageIds.add(lastAssistantMessage.id);
-                lastAssistantMessage.content.forEach(contentPart => {
+
+        messages.data.filter(message => message.role === "assistant" && (!window.lastAssistantMessageId || message.id > lastAssistantMessageId))
+            .forEach(message => {
+                window.lastAssistantMessageId = message.id;
+                message.content.forEach(contentPart => {
                     if (contentPart.type === "text") {
-                        displayMessage(contentPart.text.value, false); 
+                        displayMessage(contentPart.text.value, false);
                     }
                 });
-            }
-        });
+            });
 
-        showLoadingIcon(false); 
+        showLoadingIcon(false);
 
     } catch (error) {
         console.error('Error interacting with OpenAI Assistant:', error);
