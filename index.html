@@ -25,16 +25,27 @@
     </div>
     <button id="deleteConversationBtn">Delete Conversation</button>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('send-button').addEventListener('click', () => {
+            document.addEventListener('DOMContentLoaded', () => {
+                const sendButton = document.getElementById('send-button');
                 const inputElement = document.getElementById('chat-input');
-                const userMessage = inputElement.value;
-                if (userMessage.trim() !== '') {
-                    handleUserMessage(userMessage);
-                    inputElement.value = '';
-                    handleUserInput(userMessage);
+        
+                sendButton.addEventListener('click', () => sendMessage());
+        
+                inputElement.addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault(); // Prevent the default Enter key action
+                        sendMessage();
+                    }
+                });
+        
+                function sendMessage() {
+                    const userMessage = inputElement.value;
+                    if (userMessage.trim() !== '') {
+                        handleUserMessage(userMessage);
+                        inputElement.value = '';
+                        handleUserInput(userMessage);
+                    }
                 }
-            });
 
             document.getElementById('deleteConversationBtn').addEventListener('click', async () => {
                 try {
