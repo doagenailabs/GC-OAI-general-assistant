@@ -11,14 +11,17 @@ body, html {
 
 #logo-container {
     margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    width: 100%; 
 }
 
 #chat-container {
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 20px - 80px);
+    max-height: calc(100vh - 20px - 80px - 100px);
     width: 70vw;
-    margin: 10px 0;
+    margin: 20px 0;
     box-shadow: 0 15px 30px rgba(0,0,0,0.2);
     border-radius: 20px;
     overflow: hidden;
@@ -140,6 +143,7 @@ body, html {
 
     #chat-container {
         max-height: calc(100vh - 20px - 60px);
+        margin-top: 100px; 
     }
 }
 
