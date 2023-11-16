@@ -139,10 +139,17 @@ async function handleToolCalls(toolCalls, threadId, runId) {
 }
 
 async function deleteGenesysGroup(groupId) {
+    if (!window.platformClient) {
+        console.error("Platform client is not available");
+        return "Platform client not available.";
+    }
+
+    let apiInstance = new window.platformClient.GroupsApi();
+
     try {
-        const response = await fetch(`/api/deleteGenesysGroup?groupId=${groupId}`);
-        const result = await response.json();
-        return result.message;
+        await apiInstance.deleteGroup(groupId);
+        console.log("Group deleted successfully.");
+        return "Group deleted successfully.";
     } catch (error) {
         console.error('Error in deleteGenesysGroup:', error);
         return "Failed to delete group.";
