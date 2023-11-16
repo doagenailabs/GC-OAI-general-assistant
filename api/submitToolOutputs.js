@@ -1,12 +1,17 @@
 const OpenAI = require('openai');
 
-const apiKey = process.env.OAI_API_KEY;
-const openai = new OpenAI({ apiKey: apiKey });
+const apiKey = process.env.OPENAI_API_KEY;
+const model = process.env.OPENAI_MODEL;
+
+const openai = new OpenAI({
+    apiKey: apiKey
+});
 
 async function submitToolOutputs(req, res) {
     console.log('Received request in submitToolOutputs:', req.body);
 
     const { threadId, tool_outputs } = req.body;
+
     console.log('Thread ID:', threadId, 'Tool Outputs:', tool_outputs);
 
     if (!threadId) {
@@ -15,13 +20,12 @@ async function submitToolOutputs(req, res) {
     }
 
     try {
-        // Retrieve the existing thread
-        const threadResponse = await openai.beta.threads.retrieve(threadId);
-        let messages = threadResponse.data.messages;
+        // Retrieve the messages from the thread
+        const threadMessagesResponse = await openai.beta.threads.messages.list(threadId);
+        let messages = threadMessagesResponse.data;
 
         // Integrate tool outputs into the conversation
         for (const output of tool_outputs) {
-            // Find the position to insert the tool response
             let insertPosition = messages.findIndex(msg => msg.id === output.tool_call_id);
             if (insertPosition !== -1) {
                 insertPosition++; // Insert after the tool call
@@ -36,7 +40,7 @@ async function submitToolOutputs(req, res) {
 
         // Send the updated conversation to the model
         const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo-1106",
+            model: model,
             messages: messages
         });
 
