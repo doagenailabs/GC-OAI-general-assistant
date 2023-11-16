@@ -52,6 +52,7 @@
             await getConfig()
             const config = await getConfig();
             setWindowConfig(config);
+            console.error('GCclientId:', window.GCclientId);
             const platformClient = await startGCSDKs();
             window.platformClient = platformClient;
 
