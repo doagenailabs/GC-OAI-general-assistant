@@ -1,45 +1,30 @@
 const OpenAI = require('openai');
+
 const apiKey = process.env.OPENAI_API_KEY;
-const model = process.env.OPENAI_MODEL;
-const openai = new OpenAI({ apiKey: apiKey });
+
+const openai = new OpenAI({
+    apiKey: apiKey
+});
 
 async function submitToolOutputs(req, res) {
-    console.log('Received request in submitToolOutputs:', req.body);
-    const { threadId, tool_outputs, resultMessage } = req.body;
-
-    if (!threadId) {
-        console.error('Thread ID is undefined.');
-        return res.status(400).json({ error: 'Thread ID is undefined.' });
-    }
+    const { threadId, runId, tool_outputs } = req.body;
+    console.log('Submitting tool outputs for thread:', threadId, 'and run:', runId);
 
     try {
-        const threadMessagesResponse = await openai.beta.threads.messages.list(threadId);
-        let originalMessages = threadMessagesResponse.data;
+        const response = await openai.beta.threads.runs.submitToolOutputs(threadId, runId, { tool_outputs });
+        console.log('Tool outputs submitted:', response);
 
-        let reformattedMessages = originalMessages.map(msg => ({
-            role: msg.role,
-            content: msg.content[0].type === 'text' ? msg.content[0].text.value : ''
-        }));
-
-        console.log('Original messages:', reformattedMessages);
-        console.log('resultMessage:', resultMessage);
-
-        // Add the tool response as a new message after the user's request
-        reformattedMessages.push({
-            role: "tool",
-            content: `Action completed: ${resultMessage}`
-        });
-
-        console.log('Reformatted messages with tool responses:', reformattedMessages);
-
-        const response = await openai.chat.completions.create({
-            model: model,
-            messages: reformattedMessages
-        });
-
-        res.json({ message: 'Function outputs submitted and response received from assistant', response: response.data });
+        res.json({ message: 'Tool outputs submitted successfully', threadId: threadId, runId: runId });
     } catch (error) {
         console.error(`Error in submitToolOutputs:`, error);
+
+        if (error.response) {
+            console.error('Response:', error.response);
+            console.error('Status:', error.response.status);
+            console.error('Headers:', error.response.headers);
+            console.error('Data:', error.response.data);
+        }
+
         res.status(500).json({ error: error.message });
     }
 }
