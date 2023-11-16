@@ -6,22 +6,32 @@ const openai = new OpenAI({
 });
 
 async function submitToolOutputs(req, res) {
+    console.log('Received request in submitToolOutputs:', req.body);
+
     const { threadId, runId, tool_outputs } = req.body;
-    console.log('Submitting tool outputs for Thread ID:', threadId, 'and Run ID:', runId);
+
+    console.log('Thread ID:', threadId, 'Run ID:', runId, 'Tool Outputs:', tool_outputs);
+
+    if (!threadId || !runId) {
+        console.error('Thread ID or Run ID is undefined.');
+        return res.status(400).json({ error: 'Thread ID or Run ID is undefined.' });
+    }
 
     try {
-        // Process the tool outputs and construct a message to send back to the assistant
         let responseMessages = [];
         for (const output of tool_outputs) {
-            const outputMessage = constructOutputMessage(output); // Function to construct a message from the tool output
+            const outputMessage = constructOutputMessage(output);
+            console.log('Sending message to thread:', outputMessage);
+
             const message = await openai.beta.threads.messages.create(threadId, {
                 role: "user",
                 content: outputMessage
             });
+
+            console.log('Message sent to thread:', message);
             responseMessages.push(message);
         }
 
-        // Respond with the messages that were sent to the assistant
         res.json({ message: 'Tool outputs submitted and responses sent to assistant', threadId: threadId, runId: runId, responses: responseMessages });
     } catch (error) {
         console.error(`Error in submitToolOutputs:`, error);
@@ -29,10 +39,7 @@ async function submitToolOutputs(req, res) {
     }
 }
 
-// Helper function to construct a message based on tool output
 function constructOutputMessage(output) {
-    // Depending on the output structure, create a message
-    // This is a placeholder; customize this based on how your tool outputs are structured
     const message = `Function ${output.tool_call_id} completed with result: ${output.output}`;
     return message;
 }
