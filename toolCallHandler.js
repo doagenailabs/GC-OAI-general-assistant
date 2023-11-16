@@ -19,7 +19,7 @@ async function handleToolCalls(toolCalls, threadId, runId) {
         await fetch(`/api/submitToolOutputs`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ threadId: threadId, runId: runId, tool_outputs: outputs, resultMessage: resultMessage })
+            body: JSON.stringify({ threadId: threadId, runId: runId, tool_outputs: outputs})
         });
 
         localStorage.setItem(call.id, 'completed');
