@@ -1,15 +1,10 @@
-const model = process.env.OPENAI_MODEL;
-
 const OpenAI = require('openai');
-
 const apiKey = process.env.OPENAI_API_KEY;
-const openai = new OpenAI({
-    apiKey: apiKey
-});
+const model = process.env.OPENAI_MODEL;
+const openai = new OpenAI({ apiKey: apiKey });
 
 async function submitToolOutputs(req, res) {
     console.log('Received request in submitToolOutputs:', req.body);
-
     const { threadId, tool_outputs } = req.body;
 
     if (!threadId) {
@@ -18,30 +13,23 @@ async function submitToolOutputs(req, res) {
     }
 
     try {
-        // Retrieve the messages from the thread
+        // Retrieve the existing messages from the thread
         const threadMessagesResponse = await openai.beta.threads.messages.list(threadId);
         let originalMessages = threadMessagesResponse.data;
 
-        // Reformat the messages to fit the expected format
+        // Filter and reformat existing messages
         let reformattedMessages = originalMessages.map(msg => ({
             role: msg.role,
             content: msg.content[0].type === 'text' ? msg.content[0].text.value : ''
-            // Include only 'role' and 'content' properties
         }));
 
-        // Integrate tool outputs into the conversation
-        for (const output of tool_outputs) {
-            let insertPosition = reformattedMessages.findIndex(msg => msg.id === output.tool_call_id);
-            if (insertPosition !== -1) {
-                insertPosition++; // Insert after the tool call
-                const toolResponseMessage = {
-                    role: "tool",
-                    content: constructOutputMessage(output)
-                    // 'tool_call_id' is not included as it's not recognized by the API
-                };
-                reformattedMessages.splice(insertPosition, 0, toolResponseMessage); // Insert the tool response
-            }
-        }
+        // Append tool outputs as new messages to the conversation
+        tool_outputs.forEach(output => {
+            reformattedMessages.push({
+                role: "tool",
+                content: constructOutputMessage(output)
+            });
+        });
 
         // Send the updated conversation to the model
         const response = await openai.chat.completions.create({
@@ -57,8 +45,8 @@ async function submitToolOutputs(req, res) {
 }
 
 function constructOutputMessage(output) {
-    const message = JSON.stringify({ result: output.output });
-    return message;
+    // Construct a message that clearly indicates the completion of the tool action
+    return `Action completed: ${output.output}`;
 }
 
 module.exports = submitToolOutputs;
