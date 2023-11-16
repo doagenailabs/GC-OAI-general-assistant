@@ -1,7 +1,7 @@
 const OpenAI = require('openai');
 
-// Retrieve the API key and Assistant ID from environment variables
-const apiKey = process.env.OAI_API_KEY;
+
+const apiKey = process.env.OPENAI_API_KEY;
 const assistantId = process.env.OPENAI_ASSISTANT_ID;
 
 const openai = new OpenAI({
