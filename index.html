@@ -6,7 +6,6 @@
     <title>GC Assistant</title>
     <script src="https://sdk-cdn.mypurecloud.com/javascript/173.1.0/purecloud-platform-client-v2.min.js"></script>
     <script src="https://sdk-cdn.mypurecloud.com/client-apps/2.6.3/purecloud-client-app-sdk-de77761d.min.js"></script>
-    <script src="main.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -27,50 +26,60 @@
         <div class="loading-spinner"></div>
     </div>    
     <button id="deleteConversationBtn">Delete Conversation</button>
+
+    <script src="startGCSDKs.js"></script>
+    <script src="main.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const sendButton = document.getElementById('send-button');
-            const inputElement = document.getElementById('chat-input');
-    
-            sendButton.addEventListener('click', () => sendMessage());
-    
-            inputElement.addEventListener('keypress', (event) => {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    sendMessage();
-                }
-            });
-    
-            function sendMessage() {
-                const userMessage = inputElement.value;
-                if (userMessage.trim() !== '') {
-                    handleUserMessage(userMessage);
-                    inputElement.value = '';
-                    handleUserInput(userMessage);
-                }
-            }
-    
-            document.getElementById('deleteConversationBtn').addEventListener('click', async () => {
-                try {
-                    const currentThreadId = localStorage.getItem('currentThreadId');
-                    if (currentThreadId) {
-                        await fetch(`/api/deleteThread`, {
-                            method: 'DELETE',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ threadId: currentThreadId })
-                        });
-                        localStorage.removeItem('currentThreadId');
-                        clearChatWindow();
-                        console.log('Conversation deleted');
+        async function initialize() {
+            const platformClient = await startGCSDKs();
+            window.platformClient = platformClient;
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const sendButton = document.getElementById('send-button');
+                const inputElement = document.getElementById('chat-input');
+        
+                sendButton.addEventListener('click', () => sendMessage());
+        
+                inputElement.addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        sendMessage();
                     }
-                } catch (error) {
-                    console.error('Error deleting conversation:', error);
+                });
+        
+                function sendMessage() {
+                    const userMessage = inputElement.value;
+                    if (userMessage.trim() !== '') {
+                        handleUserMessage(userMessage);
+                        inputElement.value = '';
+                        handleUserInput(userMessage);
+                    }
                 }
+        
+                document.getElementById('deleteConversationBtn').addEventListener('click', async () => {
+                    try {
+                        const currentThreadId = localStorage.getItem('currentThreadId');
+                        if (currentThreadId) {
+                            await fetch(`/api/deleteThread`, {
+                                method: 'DELETE',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({ threadId: currentThreadId })
+                            });
+                            localStorage.removeItem('currentThreadId');
+                            clearChatWindow();
+                            console.log('Conversation deleted');
+                        }
+                    } catch (error) {
+                        console.error('Error deleting conversation:', error);
+                    }
+                });
+        
+                loadExistingThread();
             });
-    
-            loadExistingThread();
-        });
-    
+        }
+
+        initialize().catch(console.error);
+
         function clearChatWindow() {
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML = '';
