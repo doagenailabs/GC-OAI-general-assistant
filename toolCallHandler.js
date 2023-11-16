@@ -4,7 +4,7 @@ async function handleToolCalls(toolCalls, threadId, runId) {
         switch (call.function.name) {
             case 'deleteGroup':
                 const groupId = JSON.parse(call.function.arguments).groupId;
-                resultMessage = await deleteGroup(groupId);
+                resultMessage = await window.deleteGroup(groupId);
                 displayMessage(resultMessage, false); // false for assistant message
                 break;
             // Add cases for other functions as needed
