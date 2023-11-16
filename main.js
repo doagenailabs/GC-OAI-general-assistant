@@ -55,13 +55,10 @@ async function handleUserInput(userMessage) {
 
         let assistantResponse;
         do {
-            // Check the Run status
             assistantResponse = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
                 .then(response => response.json());
 
-            // Handle 'requires_action' status
             if (assistantResponse.status === 'requires_action') {
-                // Perform required actions and submit tool outputs
                 await handleToolCalls(assistantResponse.required_action.submit_tool_outputs.tool_calls, threadId, run.id);
                 // Update the run status after submitting tool outputs
                 run = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
@@ -74,14 +71,13 @@ async function handleUserInput(userMessage) {
         const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
             .then(response => response.json());
         
-        const lastAssistantMessage = messages.data.filter(message => message.role === "assistant").shift();
-        if (lastAssistantMessage) {
+        messages.data.filter(message => message.role === "assistant").forEach(lastAssistantMessage => {
             lastAssistantMessage.content.forEach(contentPart => {
                 if (contentPart.type === "text") {
-                    displayMessage(contentPart.text.value, false); 
+                    displayMessage(contentPart.text.value, false); // false for assistant message
                 }
             });
-        }
+        });
 
         showLoadingIcon(false); 
 
