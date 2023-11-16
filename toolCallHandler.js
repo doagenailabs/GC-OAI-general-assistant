@@ -2,9 +2,9 @@ async function handleToolCalls(toolCalls, threadId, runId) {
     for (const call of toolCalls) {
         let resultMessage;
         switch (call.function.name) {
-            case 'deleteGenesysGroup':
+            case 'deleteGroup':
                 const groupId = JSON.parse(call.function.arguments).groupId;
-                resultMessage = await deleteGenesysGroup(groupId);
+                resultMessage = await deleteGroup(groupId);
                 displayMessage(resultMessage, false); // false for assistant message
                 break;
             // Add cases for other functions as needed
