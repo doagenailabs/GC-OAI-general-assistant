@@ -1,7 +1,7 @@
 async function deleteGroup(groupId) {
     if (!window.platformClient) {
         console.error("Platform client is not available");
-        return "Failed to delete group";
+        return "Failure";
     }
 
     let apiInstance = new window.platformClient.GroupsApi();
@@ -9,10 +9,10 @@ async function deleteGroup(groupId) {
     try {
         await apiInstance.deleteGroup(groupId);
         console.log("Group deleted successfully.");
-        return "Group deleted successfully";
+        return "Success";
     } catch (error) {
         console.error('Error in deleteGroup:', error);
-        return "Failed to delete group";
+        return "Failure";
     }
 }
 
