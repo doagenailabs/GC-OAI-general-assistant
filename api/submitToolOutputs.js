@@ -25,11 +25,16 @@ async function submitToolOutputs(req, res) {
 
         // Update the corresponding tool call message with the outcome
         tool_outputs.forEach(output => {
-            const toolCallIndex = reformattedMessages.findIndex(msg => msg.role === 'tool' && msg.content.includes(output.tool_call_id));
+            const toolCallIndex = reformattedMessages.findIndex(msg => msg.role === 'user' && msg.content.includes(output.tool_call_id));
             if (toolCallIndex !== -1) {
-                reformattedMessages[toolCallIndex].content = constructOutputMessage(output);
+                const updatedMessage = constructOutputMessage(output);
+                reformattedMessages[toolCallIndex].content = updatedMessage;
+                console.log(`Updating message for tool_call_id ${output.tool_call_id} with: ${updatedMessage}`);
             }
         });
+
+        // Log the entire message payload being sent back to the assistant
+        console.log('Updated messages being sent:', reformattedMessages);
 
         // Send the updated conversation to the model
         const response = await openai.chat.completions.create({
@@ -45,7 +50,7 @@ async function submitToolOutputs(req, res) {
 }
 
 function constructOutputMessage(output) {
-    // Include the result of the tool action in a format that the model can interpret
+    // Construct a message that clearly indicates the completion of the tool action
     return `Action completed: ${output.output}`;
 }
 
