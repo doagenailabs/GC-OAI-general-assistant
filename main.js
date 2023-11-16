@@ -61,15 +61,14 @@ async function handleUserInput(userMessage) {
             await new Promise(resolve => setTimeout(resolve, 1000));
         } while (assistantResponse.status !== 'completed');
 
-        // Display ONLY the latest Assistant's Response
         const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
             .then(response => response.json());
         
-        const lastAssistantMessage = messages.data.filter(message => message.role === "assistant").pop();
+        const lastAssistantMessage = messages.data.filter(message => message.role === "assistant").shift();
         if (lastAssistantMessage) {
             lastAssistantMessage.content.forEach(contentPart => {
                 if (contentPart.type === "text") {
-                    displayMessage(contentPart.text.value, false); // false for assistant message
+                    displayMessage(contentPart.text.value, false); 
                 }
             });
         }
