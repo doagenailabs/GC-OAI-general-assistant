@@ -1,6 +1,5 @@
 function startGCSDKs() {
     const clientId = window.GCclientId;
-    const console = window.console;
     return new Promise((resolve, reject) => {
         const appName = 'GC Assistant';
         const qParamLanguage = 'langTag';
@@ -37,26 +36,7 @@ function startGCSDKs() {
         });
         myClientApp.lifecycle.addStopListener(function(event) {
             console.log("Stop listener fired, triggering final invocations before closing");        
-            if (window.mediaType !== 'call') {
-                getDigitalTranscript()
-                    .then(() => {
-                        console.log("getDigitalTranscript completed successfully.");
-                        onSessionEnd();
-                    })
-                    .catch(err => {
-                        console.error("Error executing getDigitalTranscript:", err);
-                    })
-                    .finally(() => {
-                        window.setTimeout(() => {
-                            myClientApp.lifecycle.stopped();
-                        }, 3000);
-                    });
-            } else {
-                onSessionEnd();
-                window.setTimeout(() => {
-                    myClientApp.lifecycle.stopped();
-                }, 3000);
-            }
+            //add final logic if needed
         }, true);
         client.setPersistSettings(true, appName);
         client.setEnvironment(window.environment);
