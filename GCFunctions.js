@@ -9,10 +9,10 @@ async function deleteGroup(groupId) {
     try {
         await apiInstance.deleteGroup(groupId);
         console.log("Group deleted successfully.");
-        return "Group deleted successfully.";
+        return "Group deleted successfully";
     } catch (error) {
         console.error('Error in deleteGroup:', error);
-        return "Failed to delete group.";
+        return "Failed to delete group";
     }
 }
 
