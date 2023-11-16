@@ -112,26 +112,6 @@ function handleUserMessage(userMessage) {
     displayMessage(userMessage, true); 
 }
 
-async function handleToolCalls(toolCalls, threadId, runId) {
-    for (const call of toolCalls) {
-        let resultMessage;
-        switch (call.function.name) {
-            case 'deleteGenesysGroup':
-                const groupId = JSON.parse(call.function.arguments).groupId;
-                resultMessage = await deleteGenesysGroup(groupId);
-                displayMessage(resultMessage, false); // false for assistant message
-                break;
-            // Add cases for other functions as needed
-        }
-    }
-
-    const outputs = toolCalls.map(call => ({ tool_call_id: call.id, output: "Completed" }));
-    await fetch(`/api/submitToolOutputs?threadId=${threadId}&runId=${runId}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ tool_outputs: outputs })
-    });
-}
 
 async function deleteGenesysGroup(groupId) {
     if (!window.platformClient) {
