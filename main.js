@@ -74,7 +74,7 @@ async function handleUserInput(userMessage) {
         messages.data.filter(message => message.role === "assistant").forEach(lastAssistantMessage => {
             lastAssistantMessage.content.forEach(contentPart => {
                 if (contentPart.type === "text") {
-                    displayMessage(contentPart.text.value, false); // false for assistant message
+                    displayMessage(contentPart.text.value, false); 
                 }
             });
         });
@@ -99,7 +99,6 @@ function displayMessage(message, isUserMessage) {
     const messageElement = document.createElement('div');
     messageElement.textContent = message;
 
-    // Swap the styles for user and assistant messages
     if (isUserMessage) {
         messageElement.classList.add('received-message');
     } else {
@@ -110,20 +109,26 @@ function displayMessage(message, isUserMessage) {
 }
 
 function handleUserMessage(userMessage) {
-    displayMessage(userMessage, true); // true for user message
+    displayMessage(userMessage, true); 
 }
 
 async function handleToolCalls(toolCalls, threadId, runId) {
     for (const call of toolCalls) {
+        if (executedFunctionCalls.has(call.id)) {
+            continue; // Skip already executed function calls
+        }
+
         let resultMessage;
         switch (call.function.name) {
             case 'deleteGenesysGroup':
                 const groupId = JSON.parse(call.function.arguments).groupId;
                 resultMessage = await deleteGenesysGroup(groupId);
-                displayMessage(resultMessage, false); // false for assistant message
+                displayMessage(resultMessage, false);
                 break;
             // Add cases for other functions as needed
         }
+
+        executedFunctionCalls.add(call.id); // Mark this function call as executed
     }
 
     const outputs = toolCalls.map(call => ({ tool_call_id: call.id, output: "Completed" }));
