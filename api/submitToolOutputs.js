@@ -21,26 +21,15 @@ async function submitToolOutputs(req, res) {
             content: msg.content[0].type === 'text' ? msg.content[0].text.value : ''
         }));
 
-        // Log original messages
         console.log('Original messages:', reformattedMessages);
+        console.log('resultMessage:', resultMessage);
 
-        tool_outputs.forEach(output => {
-            // Find the index of the tool call in the conversation
-            const toolCallIndex = reformattedMessages.findIndex(msg => msg.content.includes(output.tool_call_id));
-            if (toolCallIndex !== -1) {
-                // Construct the tool response
-                const toolResponseMessage = {
-                    role: "tool",
-                    content: `Action completed: ${resultMessage || output.output}`,
-                    // Add tool_call_id to link the response to the original call
-                    tool_call_id: output.tool_call_id
-                };
-                // Insert the tool response after the tool call
-                reformattedMessages.splice(toolCallIndex + 1, 0, toolResponseMessage);
-            }
+        // Add the tool response as a new message after the user's request
+        reformattedMessages.push({
+            role: "tool",
+            content: `Action completed: ${resultMessage}`
         });
 
-        // Log reformatted messages with tool responses
         console.log('Reformatted messages with tool responses:', reformattedMessages);
 
         const response = await openai.chat.completions.create({
