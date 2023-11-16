@@ -5,13 +5,17 @@ async function loadExistingThread() {
             const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
             const messages = await response.json();
 
+            const displayedMessageIds = new Set();
             messages.data.sort((a, b) => a.created_at - b.created_at).forEach(message => {
-                const isUserMessage = message.role === "user";
-                message.content.forEach(contentPart => {
-                    if (contentPart.type === "text") {
-                        displayMessage(contentPart.text.value, isUserMessage);
-                    }
-                });
+                if (!displayedMessageIds.has(message.id)) {
+                    displayedMessageIds.add(message.id);
+                    const isUserMessage = message.role === "user";
+                    message.content.forEach(contentPart => {
+                        if (contentPart.type === "text") {
+                            displayMessage(contentPart.text.value, isUserMessage);
+                        }
+                    });
+                }
             });
         } catch (error) {
             console.error('Error loading existing thread:', error);
@@ -70,6 +74,13 @@ async function handleUserInput(userMessage) {
         });
     } catch (error) {
         console.error('Error interacting with OpenAI Assistant:', error);
+    }
+}
+
+function showLoadingIcon(show) {
+    const loadingIcon = document.getElementById('loading-icon');
+    if (loadingIcon) {
+        loadingIcon.style.display = show ? 'block' : 'none';
     }
 }
 
