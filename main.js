@@ -114,21 +114,15 @@ function handleUserMessage(userMessage) {
 
 async function handleToolCalls(toolCalls, threadId, runId) {
     for (const call of toolCalls) {
-        if (executedFunctionCalls.has(call.id)) {
-            continue; // Skip already executed function calls
-        }
-
         let resultMessage;
         switch (call.function.name) {
             case 'deleteGenesysGroup':
                 const groupId = JSON.parse(call.function.arguments).groupId;
                 resultMessage = await deleteGenesysGroup(groupId);
-                displayMessage(resultMessage, false);
+                displayMessage(resultMessage, false); // false for assistant message
                 break;
             // Add cases for other functions as needed
         }
-
-        executedFunctionCalls.add(call.id); // Mark this function call as executed
     }
 
     const outputs = toolCalls.map(call => ({ tool_call_id: call.id, output: "Completed" }));
