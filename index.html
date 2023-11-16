@@ -38,6 +38,22 @@
 
             loadExistingThread();
         });
+
+        document.getElementById('deleteConversationBtn').addEventListener('click', async () => {
+            try {
+                const currentThreadId = localStorage.getItem('currentThreadId');
+                if (currentThreadId) {
+                    await fetch(`/api/deleteThread?threadId=${currentThreadId}`, { method: 'DELETE' });
+                    localStorage.removeItem('currentThreadId');
+                    console.log('Conversation deleted');
+                }
+                await handleUserInput('');
+                console.log('New conversation started');
+            } catch (error) {
+                console.error('Error deleting conversation:', error);
+            }
+        });
+        
     </script>
 </body>
 </html>
