@@ -17,24 +17,22 @@ async function submitToolOutputs(req, res) {
         const threadMessagesResponse = await openai.beta.threads.messages.list(threadId);
         let originalMessages = threadMessagesResponse.data;
 
-        // Filter and reformat existing messages
+        // Reformat existing messages
         let reformattedMessages = originalMessages.map(msg => ({
             role: msg.role,
             content: msg.content[0].type === 'text' ? msg.content[0].text.value : ''
         }));
 
-        // Update the corresponding tool call message with the outcome
+        // Append tool outputs as new messages to the conversation
         tool_outputs.forEach(output => {
-            const toolCallIndex = reformattedMessages.findIndex(msg => msg.role === 'user' && msg.content.includes(output.tool_call_id));
-            if (toolCallIndex !== -1) {
-                const updatedMessage = constructOutputMessage(output);
-                reformattedMessages[toolCallIndex].content = updatedMessage;
-                console.log(`Updating message for tool_call_id ${output.tool_call_id} with: ${updatedMessage}`);
-            }
+            reformattedMessages.push({
+                role: "tool",
+                content: constructOutputMessage(output),
+                tool_call_id: output.tool_call_id // Linking the response to the tool call
+            });
         });
 
-        // Log the entire message payload being sent back to the assistant
-        console.log('Updated messages being sent:', reformattedMessages);
+        console.log('Sending updated messages:', reformattedMessages);
 
         // Send the updated conversation to the model
         const response = await openai.chat.completions.create({
