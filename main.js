@@ -1,3 +1,5 @@
+import { handleToolCalls } from './toolCallHandler.js';
+
 async function loadExistingThread() {
     const threadId = localStorage.getItem('currentThreadId');
     if (threadId) {
