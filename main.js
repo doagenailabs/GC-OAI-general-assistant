@@ -6,32 +6,17 @@ async function loadExistingThread() {
             const messages = await response.json();
 
             const displayedMessageIds = new Set();
-
-            // Filter out and sort user messages
-            const userMessages = messages.data
-                .filter(message => message.role === "user")
-                .sort((a, b) => a.created_at - b.created_at);
-
-            // Display all user messages
-            userMessages.forEach(message => {
+            messages.data.sort((a, b) => a.created_at - b.created_at).forEach(message => {
                 if (!displayedMessageIds.has(message.id)) {
                     displayedMessageIds.add(message.id);
-                    displayMessage(message.content[0]?.text?.value, true);
+                    const isUserMessage = message.role === "user";
+                    message.content.forEach(contentPart => {
+                        if (contentPart.type === "text") {
+                            displayMessage(contentPart.text.value, isUserMessage);
+                        }
+                    });
                 }
             });
-
-            // Find the most recent assistant message
-            const mostRecentAssistantMessage = messages.data
-                .filter(message => message.role === "assistant")
-                .reduce((latest, message) => (message.created_at > latest.created_at ? message : latest), messages.data[0]);
-
-            // Display the most recent assistant message
-            mostRecentAssistantMessage.content.forEach(contentPart => {
-                if (contentPart.type === "text") {
-                    displayMessage(contentPart.text.value, false);
-                }
-            });
-
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
