@@ -5,7 +5,7 @@ const openai = new OpenAI({ apiKey: apiKey });
 
 async function submitToolOutputs(req, res) {
     console.log('Received request in submitToolOutputs:', req.body);
-    const { threadId, tool_outputs } = req.body;
+    const { threadId, tool_outputs, resultMessage } = req.body;
 
     if (!threadId) {
         console.error('Thread ID is undefined.');
@@ -21,22 +21,12 @@ async function submitToolOutputs(req, res) {
             content: msg.content[0].type === 'text' ? msg.content[0].text.value : ''
         }));
 
-        console.log('Original messages:', reformattedMessages); // Log the original messages
-
-        tool_outputs.forEach(output => {
-            // Locate the original tool call message
-            const toolCallIndex = reformattedMessages.findIndex(msg => msg.content === output.tool_call_id);
-
-            if (toolCallIndex !== -1) {
-                // Update the tool call message with the tool response
-                reformattedMessages[toolCallIndex] = {
-                    role: "tool",
-                    content: constructOutputMessage(output)
-                };
-            }
-        });
-
-        console.log('Reformatted messages with tool responses:', reformattedMessages); // Log the messages after adding tool responses
+        // Append the tool response to the conversation
+        const toolResponseMessage = {
+            role: "tool",
+            content: `Action completed: ${resultMessage}`
+        };
+        reformattedMessages.push(toolResponseMessage);
 
         const response = await openai.chat.completions.create({
             model: model,
