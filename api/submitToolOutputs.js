@@ -21,6 +21,8 @@ async function submitToolOutputs(req, res) {
             content: msg.content[0].type === 'text' ? msg.content[0].text.value : ''
         }));
 
+        console.log('Original messages:', reformattedMessages); // Log the original messages
+
         // Insert the tool responses at the correct positions in the conversation
         tool_outputs.forEach(output => {
             const toolCallIndex = reformattedMessages.findIndex(msg => msg.content.includes(output.tool_call_id));
@@ -32,6 +34,8 @@ async function submitToolOutputs(req, res) {
                 reformattedMessages.splice(toolCallIndex + 1, 0, toolResponseMessage);
             }
         });
+
+        console.log('Reformatted messages with tool responses:', reformattedMessages); // Log the messages after adding tool responses
 
         const response = await openai.chat.completions.create({
             model: model,
