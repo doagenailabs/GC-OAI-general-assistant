@@ -19,18 +19,17 @@
         </div>
         <div id="chat-input-container">
             <input type="text" id="chat-input" placeholder="Type a message...">
-            <button id="send-button">Send</button>
+            <button id="send-button" style="display: none;">Send</button> 
         </div>
     </div>
     <div id="loading-icon">
         <div class="loading-spinner"></div>
     </div>    
-    <button id="deleteConversationBtn">Delete Conversation</button>
+    <button id="deleteConversationBtn" style="display: none;">Delete Conversation</button> 
 
     <script src="startGCSDKs.js"></script>
     <script src="main.js"></script>
     <script>
-
         function getConfig() {
             return fetch('/api/getConfig')
                 .then(response => {
@@ -48,16 +47,18 @@
         }
         
         async function initialize() {           
-            
-            await getConfig()
+            await getConfig();
             const config = await getConfig();
             setWindowConfig(config);
-            console.error('GCclientId:', window.GCclientId);
             const platformClient = await startGCSDKs();
             window.platformClient = platformClient;
 
             document.addEventListener('DOMContentLoaded', () => {
                 const sendButton = document.getElementById('send-button');
+                const deleteConversationBtn = document.getElementById('deleteConversationBtn');
+                sendButton.style.display = 'block'; 
+                deleteConversationBtn.style.display = 'block'; 
+
                 const inputElement = document.getElementById('chat-input');
         
                 sendButton.addEventListener('click', () => sendMessage());
