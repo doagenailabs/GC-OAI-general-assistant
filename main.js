@@ -24,6 +24,8 @@ async function loadExistingThread() {
 }
 
 async function handleUserInput(userMessage) {
+    showLoadingIcon(true); 
+
     try {
         let threadId = localStorage.getItem('currentThreadId');
 
@@ -67,20 +69,24 @@ async function handleUserInput(userMessage) {
             if (message.role === "assistant") {
                 message.content.forEach(contentPart => {
                     if (contentPart.type === "text") {
-                        displayMessage(contentPart.text.value, false); // false for assistant message
+                        displayMessage(contentPart.text.value, false);
                     }
                 });
             }
         });
+
+        showLoadingIcon(false); 
+
     } catch (error) {
         console.error('Error interacting with OpenAI Assistant:', error);
+        showLoadingIcon(false);
     }
 }
 
 function showLoadingIcon(show) {
     const loadingIcon = document.getElementById('loading-icon');
     if (loadingIcon) {
-        loadingIcon.style.display = show ? 'block' : 'none';
+        loadingIcon.style.display = show ? 'flex' : 'none';
     }
 }
 
