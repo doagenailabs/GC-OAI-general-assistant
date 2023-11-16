@@ -5,9 +5,9 @@ async function loadExistingThread() {
             const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
             const messages = await response.json();
 
-            const displayedMessageIds = new Set();
+            const displayedMessageIds = new Set(); // Set to track displayed message IDs
             messages.data.sort((a, b) => a.created_at - b.created_at).forEach(message => {
-                if (!displayedMessageIds.has(message.id)) {
+                if (!displayedMessageIds.has(message.id)) { // Check if the message ID is already displayed
                     displayedMessageIds.add(message.id);
                     const isUserMessage = message.role === "user";
                     message.content.forEach(contentPart => {
@@ -71,12 +71,16 @@ async function handleUserInput(userMessage) {
         const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
             .then(response => response.json());
         
+        const displayedMessageIds = new Set(); // Set to track displayed message IDs
         messages.data.filter(message => message.role === "assistant").forEach(lastAssistantMessage => {
-            lastAssistantMessage.content.forEach(contentPart => {
-                if (contentPart.type === "text") {
-                    displayMessage(contentPart.text.value, false); 
-                }
-            });
+            if (!displayedMessageIds.has(lastAssistantMessage.id)) { // Check if the message ID is already displayed
+                displayedMessageIds.add(lastAssistantMessage.id);
+                lastAssistantMessage.content.forEach(contentPart => {
+                    if (contentPart.type === "text") {
+                        displayMessage(contentPart.text.value, false); 
+                    }
+                });
+            }
         });
 
         showLoadingIcon(false); 
