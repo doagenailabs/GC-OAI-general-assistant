@@ -46,6 +46,7 @@
                             body: JSON.stringify({ threadId: currentThreadId })
                         });
                         localStorage.removeItem('currentThreadId');
+                        clearChatWindow(); // Clear the chat window here
                         console.log('Conversation deleted');
                     }
                     await handleUserInput(''); // Start a new conversation
