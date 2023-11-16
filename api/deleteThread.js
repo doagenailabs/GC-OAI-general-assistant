@@ -7,18 +7,17 @@ const openai = new OpenAI({
 });
 
 async function deleteThread(req, res) {
-    console.log('Deleting thread...');
+    const { threadId } = req.body;
+    console.log('Deleting thread:', threadId);
 
     try {
         const response = await openai.beta.threads.del(threadId);
         console.log('Thread deleted:', threadId);
         console.log(response);
 
-
-        res.json(thread);
+        res.json({ message: 'Thread deleted successfully', threadId: threadId });
     } catch (error) {
         console.error(`Error in deleteThread:`, error);
-
 
         if (error.response) {
             console.error('Response:', error.response);
