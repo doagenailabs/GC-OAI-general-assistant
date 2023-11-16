@@ -19,13 +19,13 @@
         </div>
         <div id="chat-input-container">
             <input type="text" id="chat-input" placeholder="Type a message...">
-            <button id="send-button" style="display: none;">Send</button> 
+            <button id="send-button" style="display: none;">Send</button> <!-- Initially hidden -->
         </div>
     </div>
     <div id="loading-icon">
         <div class="loading-spinner"></div>
     </div>    
-    <button id="deleteConversationBtn" style="display: none;">Delete Conversation</button> 
+    <button id="deleteConversationBtn" style="display: none;">Delete Conversation</button> <!-- Initially hidden -->
 
     <script src="startGCSDKs.js"></script>
     <script src="main.js"></script>
@@ -45,63 +45,63 @@
                 window[key] = config[key];
             });
         }
-        
+
         async function initialize() {           
-            await getConfig();
             const config = await getConfig();
             setWindowConfig(config);
             const platformClient = await startGCSDKs();
             window.platformClient = platformClient;
 
-            document.addEventListener('DOMContentLoaded', () => {
-                const sendButton = document.getElementById('send-button');
-                const deleteConversationBtn = document.getElementById('deleteConversationBtn');
-                sendButton.style.display = 'block'; 
-                deleteConversationBtn.style.display = 'block'; 
-
-                const inputElement = document.getElementById('chat-input');
-        
-                sendButton.addEventListener('click', () => sendMessage());
-        
-                inputElement.addEventListener('keypress', (event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault();
-                        sendMessage();
-                    }
-                });
-        
-                function sendMessage() {
-                    const userMessage = inputElement.value;
-                    if (userMessage.trim() !== '') {
-                        handleUserMessage(userMessage);
-                        inputElement.value = '';
-                        handleUserInput(userMessage);
-                    }
-                }
-        
-                document.getElementById('deleteConversationBtn').addEventListener('click', async () => {
-                    try {
-                        const currentThreadId = localStorage.getItem('currentThreadId');
-                        if (currentThreadId) {
-                            await fetch(`/api/deleteThread`, {
-                                method: 'DELETE',
-                                headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify({ threadId: currentThreadId })
-                            });
-                            localStorage.removeItem('currentThreadId');
-                            clearChatWindow();
-                            console.log('Conversation deleted');
-                        }
-                    } catch (error) {
-                        console.error('Error deleting conversation:', error);
-                    }
-                });
-        
-                loadExistingThread();
-            });
+            const sendButton = document.getElementById('send-button');
+            const deleteConversationBtn = document.getElementById('deleteConversationBtn');
+            sendButton.style.display = 'block'; // Display the button
+            deleteConversationBtn.style.display = 'block'; // Display the button
         }
 
-        initialize().catch(console.error);
+        document.addEventListener('DOMContentLoaded', () => {
+            initialize().catch(console.error);
+
+            const inputElement = document.getElementById('chat-input');
+            const sendButton = document.getElementById('send-button');
+
+            sendButton.addEventListener('click', () => sendMessage());
+    
+            inputElement.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            function sendMessage() {
+                const userMessage = inputElement.value;
+                if (userMessage.trim() !== '') {
+                    handleUserMessage(userMessage);
+                    inputElement.value = '';
+                    handleUserInput(userMessage);
+                }
+            }
+
+            document.getElementById('deleteConversationBtn').addEventListener('click', async () => {
+                try {
+                    const currentThreadId = localStorage.getItem('currentThreadId');
+                    if (currentThreadId) {
+                        await fetch(`/api/deleteThread`, {
+                            method: 'DELETE',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ threadId: currentThreadId })
+                        });
+                        localStorage.removeItem('currentThreadId');
+                        clearChatWindow();
+                        console.log('Conversation deleted');
+                    }
+                } catch (error) {
+                    console.error('Error deleting conversation:', error);
+                }
+            });
+
+            loadExistingThread();
+        });
 
         function clearChatWindow() {
             const chatWindow = document.getElementById('chat-window');
