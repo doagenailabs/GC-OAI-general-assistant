@@ -7,18 +7,18 @@ const openai = new OpenAI({
 });
 
 async function addMessageToThread(req, res) {
-    const { threadId, messageContent, fileId } = req.body;
+    const { threadId, messageContent, fileID } = req.body;
 
     try {
-        let messageOptions = {
+        const messageData = {
             role: "user",
             content: messageContent
         };
-        if (fileId) {
-            messageOptions.file_ids = [fileId];
+        if (fileID) {
+            messageData.file_ids = [fileID];
         }
 
-        const message = await openai.beta.threads.messages.create(threadId, messageOptions);
+        const message = await openai.beta.threads.messages.create(threadId, messageData);
         res.json(message);
     } catch (error) {
         console.error(`Error in addMessageToThread:`, error);
