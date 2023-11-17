@@ -38,11 +38,16 @@ async function handleUserInput(userMessage, file) {
             console.log('Using existing Thread ID:', threadId);
         }
 
+        let fileID = null;
+        if (file) {
+            fileID = await uploadFile(file);
+        }
+
         const formData = new FormData();
         formData.append('threadId', threadId);
         formData.append('messageContent', userMessage);
-        if (file) {
-            formData.append('file', file);
+        if (fileID) {
+            formData.append('fileId', fileID);
         }
 
         await fetch('/api/addMessageToThread', {
@@ -92,6 +97,19 @@ async function handleUserInput(userMessage, file) {
     }
 }
 
+async function uploadFile(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('/api/uploadFile', {
+        method: 'POST',
+        body: formData
+    });
+
+    const result = await response.json();
+    return result.fileId;
+}
+
 function showLoadingIcon(show) {
     const loadingIcon = document.getElementById('loading-icon');
     if (loadingIcon) {
@@ -116,7 +134,6 @@ function displayMessage(message, isUserMessage) {
 function handleUserMessage(userMessage) {
     displayMessage(userMessage, true); 
 }
-
 
 async function deleteGenesysGroup(groupId) {
     if (!window.platformClient) {
