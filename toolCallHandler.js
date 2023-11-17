@@ -1,4 +1,6 @@
 async function handleToolCalls(toolCalls, threadId, runId) {
+    let toolOutputs = [];
+
     for (const call of toolCalls) {
         if (localStorage.getItem(call.id) === 'completed') {
             continue;
@@ -13,16 +15,17 @@ async function handleToolCalls(toolCalls, threadId, runId) {
             // Add cases for other functions as needed
         }
 
-        const outputs = [{ tool_call_id: call.id, output: resultMessage || "Completed" }];
+        toolOutputs.push({ tool_call_id: call.id, output: resultMessage || "Completed" });
+        localStorage.setItem(call.id, 'completed');
+    }
 
-        // Send the result message, threadId, and runId in the request body
+    // Check if there are any tool outputs to submit
+    if (toolOutputs.length > 0) {
         await fetch(`/api/submitToolOutputs`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ threadId: threadId, runId: runId, tool_outputs: outputs})
+            body: JSON.stringify({ threadId: threadId, runId: runId, tool_outputs: toolOutputs })
         });
-
-        localStorage.setItem(call.id, 'completed');
     }
 }
 
