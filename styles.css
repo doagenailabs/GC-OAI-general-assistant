@@ -192,3 +192,8 @@ body, html {
     100% { transform: rotate(360deg); }
 }
 
+#clip-icon {
+    cursor: pointer;
+    margin-right: 10px;
+}
+
