@@ -1,42 +1,35 @@
-const OpenAI = require('openai');
 const fs = require('fs');
-const multer = require('multer');
+const path = require('path');
+const OpenAI = require('openai');
 
 const apiKey = process.env.OPENAI_API_KEY;
-const upload = multer({ dest: 'uploads/' });
+const openai = new OpenAI({ apiKey: apiKey });
 
-const openai = new OpenAI({
-    apiKey: apiKey
-});
+async function uploadFile(req, res) {
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+    }
 
-module.exports = async (req, res) => {
-    upload.single('file')(req, res, async (err) => {
-        if (err) {
-            res.status(500).send(`Multer error: ${err}`);
-            return;
-        }
+    let uploadedFile = req.files.file;
+    let tempPath = path.join(__dirname, 'uploads', uploadedFile.name);
+    
+    // Save file temporarily
+    await uploadedFile.mv(tempPath);
 
-        if (!req.file) {
-            res.status(400).send('No file uploaded.');
-            return;
-        }
+    try {
+        const file = await openai.files.create({
+            file: fs.createReadStream(tempPath),
+            purpose: "assistants",
+        });
 
-        try {
-            const fileStream = fs.createReadStream(req.file.path);
-            const fileResponse = await openai.files.create({
-                file: fileStream,
-                purpose: "assistants"
-            });
+        // Delete the temporary file
+        fs.unlinkSync(tempPath);
 
-            // Clean up the uploaded file
-            fs.unlink(req.file.path, (err) => {
-                if (err) console.error(`Error deleting file: ${err}`);
-            });
+        res.json({ file_id: file.id });
+    } catch (error) {
+        console.error(`Error in uploadFile:`, error);
+        res.status(500).json({ error: error.message });
+    }
+}
 
-            res.json({ fileId: fileResponse.id });
-        } catch (error) {
-            console.error('Error in uploadFile:', error);
-            res.status(500).json({ error: error.message });
-        }
-    });
-};
+module.exports = uploadFile;
