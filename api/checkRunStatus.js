@@ -11,6 +11,10 @@ async function checkRunStatus(req, res) {
 
     try {
         const runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+
+        // Don't send sensitive information to client-side
+        delete runStatus.instructions;
+
         res.json(runStatus);
     } catch (error) {
         console.error(`Error in checkRunStatus:`, error);
