@@ -1,6 +1,5 @@
 const OpenAI = require('openai');
 
-
 const apiKey = process.env.OPENAI_API_KEY;
 const assistantId = process.env.OPENAI_ASSISTANT_ID;
 
@@ -9,14 +8,7 @@ const openai = new OpenAI({
 });
 
 async function runAssistant(req, res) {
-    // Log request body
-    console.log('Request body:', req.body);
-
     const { threadId, instructions } = req.body;
-
-    // Log extracted variables
-    console.log('Thread ID:', threadId);
-    console.log('Instructions:', instructions);
 
     try {
         const run = await openai.beta.threads.runs.create(threadId, {
@@ -24,12 +16,11 @@ async function runAssistant(req, res) {
             instructions: instructions
         });
 
-        // Log the response from OpenAI
-        console.log('OpenAI Response:', run);
+        // Don't send sensitive information to client-side
+        delete run.instructions;
 
         res.json(run);
     } catch (error) {
-        // Log error details
         console.error(`Error in runAssistant:`, error);
         res.status(500).json({ error: error.message });
     }
