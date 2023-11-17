@@ -81,6 +81,12 @@ async function handleUserInput(userMessage, file) {
             assistantResponse = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
                 .then(response => response.json());
 
+            if (assistantResponse.status === 'failed') {
+                console.error('Run failed:', assistantResponse.last_error);
+                displayMessage('Sorry, something went wrong with processing your request.', false);
+                break; // Exiting the loop on failure
+            }
+
             if (assistantResponse.status === 'requires_action') {
                 const toolCalls = assistantResponse.required_action.submit_tool_outputs.tool_calls;
 
