@@ -87,7 +87,7 @@ async function handleUserInput(userMessage, file) {
                 const toolCalls = assistantResponse.required_action.submit_tool_outputs.tool_calls;
                 
                 for (const toolCall of toolCalls) {
-                    const output = await handleToolCall(toolCall);
+                    const output = await handleToolCalls(toolCall);
                     toolOutputs.push({ tool_call_id: toolCall.id, output: output });
                 }
         
