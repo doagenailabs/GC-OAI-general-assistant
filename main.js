@@ -23,7 +23,7 @@ async function loadExistingThread() {
     }
 }
 
-async function handleUserInput(userMessage) {
+async function handleUserInput(userMessage, file) {
     showLoadingIcon(true);
 
     try {
@@ -38,10 +38,18 @@ async function handleUserInput(userMessage) {
             console.log('Using existing Thread ID:', threadId);
         }
 
+        // Prepare the form data including the file if present
+        const formData = new FormData();
+        formData.append('threadId', threadId);
+        formData.append('messageContent', userMessage);
+        if (file) {
+            formData.append('file', file);
+        }
+
+        // Send the message and file to your server
         await fetch('/api/addMessageToThread', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ threadId: threadId, messageContent: userMessage })
+            body: formData
         });
 
         let run = await fetch('/api/runAssistant', {
