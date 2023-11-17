@@ -48,5 +48,3 @@ module.exports = (req, res) => {
         res.status(405).send("Method not allowed");
     }
 };
-
-module.exports = uploadFile;
