@@ -40,19 +40,26 @@ async function handleUserInput(userMessage, file) {
 
         let fileID = null;
         if (file) {
-            fileID = await uploadFile(file);
+            const formData = new FormData();
+            formData.append('file', file);
+            const fileUploadResponse = await fetch('/api/uploadFile', {
+                method: 'POST',
+                body: formData
+            });
+            const fileData = await fileUploadResponse.json();
+            fileID = fileData.file_id;
         }
 
-        const formData = new FormData();
-        formData.append('threadId', threadId);
-        formData.append('messageContent', userMessage);
-        if (fileID) {
-            formData.append('fileId', fileID);
-        }
+        const messageData = {
+            threadId: threadId,
+            messageContent: userMessage,
+            fileID: fileID
+        };
 
         await fetch('/api/addMessageToThread', {
             method: 'POST',
-            body: formData
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(messageData)
         });
 
         let run = await fetch('/api/runAssistant', {
@@ -95,19 +102,6 @@ async function handleUserInput(userMessage, file) {
         console.error('Error interacting with OpenAI Assistant:', error);
         showLoadingIcon(false);
     }
-}
-
-async function uploadFile(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch('/api/uploadFile', {
-        method: 'POST',
-        body: formData
-    });
-
-    const result = await response.json();
-    return result.fileId;
 }
 
 function showLoadingIcon(show) {
