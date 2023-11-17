@@ -40,14 +40,21 @@ async function handleUserInput(userMessage, file) {
 
         let fileID = null;
         if (file) {
+            console.log('Uploading file:', file.name);
             const formData = new FormData();
             formData.append('file', file);
             const fileUploadResponse = await fetch('/api/uploadFile', {
                 method: 'POST',
                 body: formData
             });
+
+            if (!fileUploadResponse.ok) {
+                throw new Error(`File upload failed: ${fileUploadResponse.statusText}`);
+            }
+
             const fileData = await fileUploadResponse.json();
             fileID = fileData.file_id;
+            console.log('File uploaded successfully. File ID:', fileID);
         }
 
         const messageData = {
@@ -56,6 +63,7 @@ async function handleUserInput(userMessage, file) {
             fileID: fileID
         };
 
+        console.log('Sending message with attached file ID (if any):', fileID);
         await fetch('/api/addMessageToThread', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -99,7 +107,7 @@ async function handleUserInput(userMessage, file) {
         showLoadingIcon(false);
 
     } catch (error) {
-        console.error('Error interacting with OpenAI Assistant:', error);
+        console.error('Error in handleUserInput:', error);
         showLoadingIcon(false);
     }
 }
