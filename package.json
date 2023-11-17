@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "openai": "4.17.5",
-    "node-fetch": "^2.6.1",
-    "multer": "^1.4.4"
+    "multiparty": "^4.2.2",
+    "node-fetch": "^2.6.1" 
   }
 }
