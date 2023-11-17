@@ -77,16 +77,35 @@ async function handleUserInput(userMessage, file) {
         }).then(response => response.json());
 
         let assistantResponse;
+        let toolOutputs = []; 
+        
         do {
             assistantResponse = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
                 .then(response => response.json());
-
+        
             if (assistantResponse.status === 'requires_action') {
-                await handleToolCalls(assistantResponse.required_action.submit_tool_outputs.tool_calls, threadId, run.id);
+                const toolCalls = assistantResponse.required_action.submit_tool_outputs.tool_calls;
+                
+                for (const toolCall of toolCalls) {
+                    const output = await handleToolCall(toolCall);
+                    toolOutputs.push({ tool_call_id: toolCall.id, output: output });
+                }
+        
+                // Submit all tool outputs together
+                await fetch(`/api/submitToolOutputs`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        threadId: threadId,
+                        runId: run.id,
+                        tool_outputs: toolOutputs
+                    })
+                });
+        
                 run = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
                     .then(response => response.json());
             }
-
+        
             await new Promise(resolve => setTimeout(resolve, 1000));
         } while (assistantResponse.status !== 'completed');
 
