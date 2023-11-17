@@ -38,7 +38,6 @@ async function handleUserInput(userMessage, file) {
             console.log('Using existing Thread ID:', threadId);
         }
 
-        // Prepare the form data including the file if present
         const formData = new FormData();
         formData.append('threadId', threadId);
         formData.append('messageContent', userMessage);
@@ -46,7 +45,6 @@ async function handleUserInput(userMessage, file) {
             formData.append('file', file);
         }
 
-        // Send the message and file to your server
         await fetch('/api/addMessageToThread', {
             method: 'POST',
             body: formData
@@ -93,7 +91,6 @@ async function handleUserInput(userMessage, file) {
         showLoadingIcon(false);
     }
 }
-
 
 function showLoadingIcon(show) {
     const loadingIcon = document.getElementById('loading-icon');
