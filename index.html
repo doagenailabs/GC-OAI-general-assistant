@@ -123,15 +123,17 @@
 
             // Event listeners for assistant selection buttons
             document.getElementById('btn-groups').addEventListener('click', function() {
-                selectAssistantAndShowChat('groups');
+                window.selectedAssistantId = 'groups';
+                selectAssistantAndShowChat();
             });
             document.getElementById('btn-queues').addEventListener('click', function() {
-                selectAssistantAndShowChat('queues');
+                window.selectedAssistantId = 'queues';
+                selectAssistantAndShowChat();
             });
             document.getElementById('btn-users').addEventListener('click', function() {
-                selectAssistantAndShowChat('users');
+                window.selectedAssistantId = 'users';
+                selectAssistantAndShowChat();
             });
-        });
 
         function selectAssistantAndShowChat(assistantId) {
             selectedAssistantId = assistantId;
