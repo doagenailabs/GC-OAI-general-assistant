@@ -75,7 +75,7 @@ async function handleUserInput(userMessage, file) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ 
                 threadId: threadId, 
-                assistantType: selectedAssistantId
+                assistantType: window.selectedAssistantId
             })
         }).then(response => response.json());
 
@@ -168,6 +168,3 @@ async function deleteGenesysGroup(groupId) {
         return "Failed to delete group.";
     }
 }
-
-// Global variable to store the selected assistant ID
-var selectedAssistantId = '';
