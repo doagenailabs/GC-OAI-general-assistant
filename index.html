@@ -120,13 +120,29 @@
             });
 
             loadExistingThread();
+
+            // Event listeners for assistant selection buttons
+            document.getElementById('btn-groups').addEventListener('click', function() {
+                selectAssistantAndShowChat('groups');
+            });
+            document.getElementById('btn-queues').addEventListener('click', function() {
+                selectAssistantAndShowChat('queues');
+            });
+            document.getElementById('btn-users').addEventListener('click', function() {
+                selectAssistantAndShowChat('users');
+            });
         });
+
+        function selectAssistantAndShowChat(assistantId) {
+            selectedAssistantId = assistantId;
+            document.getElementById('initial-ui').style.display = 'none';
+            document.getElementById('chat-ui').style.display = 'block';
+        }
 
         function clearChatWindow() {
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML = '';
         }
     </script>
-
 </body>
 </html>
