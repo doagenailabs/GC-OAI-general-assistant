@@ -1,3 +1,4 @@
+// Function to load existing thread and display messages
 async function loadExistingThread() {
     const threadId = localStorage.getItem('currentThreadId');
     if (threadId) {
@@ -23,6 +24,7 @@ async function loadExistingThread() {
     }
 }
 
+// Function to handle user input and initiate the process
 async function handleUserInput(userMessage, file) {
     showLoadingIcon(true);
 
@@ -90,7 +92,6 @@ async function handleUserInput(userMessage, file) {
             if (assistantResponse.status === 'requires_action') {
                 const toolCalls = assistantResponse.required_action.submit_tool_outputs.tool_calls;
 
-                // Check if toolCalls is an array and has elements
                 if (Array.isArray(toolCalls) && toolCalls.length > 0) {
                     await handleToolCalls(toolCalls, threadId, run.id);
                 }
@@ -105,7 +106,6 @@ async function handleUserInput(userMessage, file) {
         const messages = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`)
             .then(response => response.json());
 
-        // Find the most recent assistant message
         const mostRecentAssistantMessage = messages.data
             .filter(message => message.role === "assistant")
             .reduce((latest, message) => (message.created_at > latest.created_at ? message : latest), messages.data[0]);
@@ -124,6 +124,7 @@ async function handleUserInput(userMessage, file) {
     }
 }
 
+// Show or hide the loading icon
 function showLoadingIcon(show) {
     const loadingIcon = document.getElementById('loading-icon');
     if (loadingIcon) {
@@ -131,6 +132,7 @@ function showLoadingIcon(show) {
     }
 }
 
+// Display a message in the chat window
 function displayMessage(message, isUserMessage) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
@@ -145,10 +147,12 @@ function displayMessage(message, isUserMessage) {
     chatWindow.appendChild(messageElement);
 }
 
+// Function to display user message
 function handleUserMessage(userMessage) {
     displayMessage(userMessage, true); 
 }
 
+// Function to delete a Genesys group
 async function deleteGenesysGroup(groupId) {
     if (!window.platformClient) {
         console.error("Platform client is not available");
@@ -177,7 +181,6 @@ function selectAssistantAndShowChat(assistantId) {
     document.getElementById('chat-ui').style.display = 'block';
 }
 
-// Event listeners for the new UI buttons
 document.getElementById('btn-groups').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_GROUP_ASSISTANT_ID'); });
 document.getElementById('btn-queues').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_QUEUE_ASSISTANT_ID'); });
 document.getElementById('btn-users').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_USER_ASSISTANT_ID'); });
