@@ -166,3 +166,18 @@ async function deleteGenesysGroup(groupId) {
         return "Failed to delete group.";
     }
 }
+
+// Global variable to store the selected assistant ID
+var selectedAssistantId = '';
+
+// Function to set the assistant ID based on button click and show chat UI
+function selectAssistantAndShowChat(assistantId) {
+    selectedAssistantId = assistantId;
+    document.getElementById('initial-ui').style.display = 'none';
+    document.getElementById('chat-ui').style.display = 'block';
+}
+
+// Event listeners for the new UI buttons
+document.getElementById('btn-groups').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_GROUP_ASSISTANT_ID'); });
+document.getElementById('btn-queues').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_QUEUE_ASSISTANT_ID'); });
+document.getElementById('btn-users').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_USER_ASSISTANT_ID'); });
