@@ -1,4 +1,3 @@
-// Function to load existing thread and display messages
 async function loadExistingThread() {
     const threadId = localStorage.getItem('currentThreadId');
     if (threadId) {
@@ -24,7 +23,6 @@ async function loadExistingThread() {
     }
 }
 
-// Function to handle user input and initiate the process
 async function handleUserInput(userMessage, file) {
     showLoadingIcon(true);
 
@@ -75,7 +73,10 @@ async function handleUserInput(userMessage, file) {
         let run = await fetch('/api/runAssistant', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ threadId: threadId })
+            body: JSON.stringify({ 
+                threadId: threadId, 
+                assistantType: selectedAssistantId
+            })
         }).then(response => response.json());
 
         let assistantResponse;
@@ -124,7 +125,7 @@ async function handleUserInput(userMessage, file) {
     }
 }
 
-// Show or hide the loading icon
+
 function showLoadingIcon(show) {
     const loadingIcon = document.getElementById('loading-icon');
     if (loadingIcon) {
@@ -132,7 +133,6 @@ function showLoadingIcon(show) {
     }
 }
 
-// Display a message in the chat window
 function displayMessage(message, isUserMessage) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
@@ -147,12 +147,10 @@ function displayMessage(message, isUserMessage) {
     chatWindow.appendChild(messageElement);
 }
 
-// Function to display user message
 function handleUserMessage(userMessage) {
     displayMessage(userMessage, true); 
 }
 
-// Function to delete a Genesys group
 async function deleteGenesysGroup(groupId) {
     if (!window.platformClient) {
         console.error("Platform client is not available");
@@ -181,6 +179,6 @@ function selectAssistantAndShowChat(assistantId) {
     document.getElementById('chat-ui').style.display = 'block';
 }
 
-document.getElementById('btn-groups').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_GROUP_ASSISTANT_ID'); });
-document.getElementById('btn-queues').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_QUEUE_ASSISTANT_ID'); });
-document.getElementById('btn-users').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_USER_ASSISTANT_ID'); });
+document.getElementById('btn-groups').addEventListener('click', function() { selectAssistantAndShowChat('groups'); });
+document.getElementById('btn-queues').addEventListener('click', function() { selectAssistantAndShowChat('queues'); });
+document.getElementById('btn-users').addEventListener('click', function() { selectAssistantAndShowChat('users'); });
