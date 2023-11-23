@@ -13,25 +13,37 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="logo-container">
-        <img src="assets/images/GC_logo.png" alt="Genesys Cloud Logo" id="gc-logo">
+    <!-- Initial UI with buttons -->
+    <div id="initial-ui">
+        <p>How can I help you?</p>
+        <button id="btn-groups">Groups</button>
+        <button id="btn-queues">Queues</button>
+        <button id="btn-users">Users</button>
     </div>
 
-    <div id="chat-container">
-        <div id="chat-window">
-            <!-- Chat messages will be displayed here -->
+    <!-- Existing chat UI, initially hidden -->
+    <div id="chat-ui" style="display: none;">
+        <div id="logo-container">
+            <img src="assets/images/GC_logo.png" alt="Genesys Cloud Logo" id="gc-logo">
         </div>
-        <div id="chat-input-container">
-            <input type="file" id="file-input" accept=".csv,.pdf,.json" style="display: none;">
-            <label for="file-input" id="clip-icon">📎</label>
-            <input type="text" id="chat-input" placeholder="Type a message...">
-            <button id="send-button">Send</button>
+
+        <div id="chat-container">
+            <div id="chat-window">
+                <!-- Chat messages will be displayed here -->
+            </div>
+            <div id="chat-input-container">
+                <input type="file" id="file-input" accept=".csv,.pdf,.json" style="display: none;">
+                <label for="file-input" id="clip-icon">📎</label>
+                <input type="text" id="chat-input" placeholder="Type a message...">
+                <button id="send-button">Send</button>
+            </div>
         </div>
+        <div id="loading-icon">
+            <div class="loading-spinner"></div>
+        </div>    
+        <button id="deleteConversationBtn" style="display: none;">Delete Conversation</button> <!-- Initially hidden -->
     </div>
-    <div id="loading-icon">
-        <div class="loading-spinner"></div>
-    </div>    
-    <button id="deleteConversationBtn" style="display: none;">Delete Conversation</button> <!-- Initially hidden -->
+
     <script>
         function getConfig() {
             return fetch('/api/getConfig')
@@ -114,6 +126,21 @@
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML = '';
         }
+
+        // Global variable to store the selected assistant ID
+        var selectedAssistantId = '';
+
+        // Function to set the assistant ID based on button click and show chat UI
+        function selectAssistantAndShowChat(assistantId) {
+            selectedAssistantId = assistantId;
+            document.getElementById('initial-ui').style.display = 'none';
+            document.getElementById('chat-ui').style.display = 'block';
+        }
+
+        // Event listeners for the new UI buttons
+        document.getElementById('btn-groups').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_GROUP_ASSISTANT_ID'); });
+        document.getElementById('btn-queues').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_QUEUE_ASSISTANT_ID'); });
+        document.getElementById('btn-users').addEventListener('click', function() { selectAssistantAndShowChat('OPENAI_USER_ASSISTANT_ID'); });
     </script>
 
 </body>
