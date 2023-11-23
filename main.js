@@ -171,14 +171,3 @@ async function deleteGenesysGroup(groupId) {
 
 // Global variable to store the selected assistant ID
 var selectedAssistantId = '';
-
-// Function to set the assistant ID based on button click and show chat UI
-function selectAssistantAndShowChat(assistantId) {
-    selectedAssistantId = assistantId;
-    document.getElementById('initial-ui').style.display = 'none';
-    document.getElementById('chat-ui').style.display = 'block';
-}
-
-document.getElementById('btn-groups').addEventListener('click', function() { selectAssistantAndShowChat('groups'); });
-document.getElementById('btn-queues').addEventListener('click', function() { selectAssistantAndShowChat('queues'); });
-document.getElementById('btn-users').addEventListener('click', function() { selectAssistantAndShowChat('users'); });
