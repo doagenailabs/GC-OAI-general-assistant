@@ -31,6 +31,8 @@ body, html {
     background-color: #007BFF;
     color: white;
     font-size: 18px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
