@@ -26,29 +26,55 @@ body, html {
     padding: 15px 30px;
     margin: 10px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    background-color: #007BFF;
+    background-image: linear-gradient(to right, #0062E6, #33AEFF);
     color: white;
-    font-size: 18px;
     font-family: 'Lato', sans-serif;
-    font-weight: 700;
+    font-size: 18px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
     border-bottom: 4px solid #0056b3;
+    position: relative;
+    overflow: hidden;
+}
+
+#initial-ui button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    display: block;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+}
+
+#initial-ui button:hover::before {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 #initial-ui button:hover {
-    background-color: #0056b3;
+    background-image: linear-gradient(to right, #0056b3, #3399FF);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
 #initial-ui button:active {
     transform: translateY(-1px);
-    border-bottom: 1px solid #0056b3;
+    border-bottom: 1px solid #00488E;
+}
+
+#initial-ui button:focus {
+    outline: none;
 }
 
 #logo-container {
