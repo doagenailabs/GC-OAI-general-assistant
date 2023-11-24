@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "openai": "4.17.5",
-    "multiparty": "^4.2.2"
+    "multiparty": "^4.2.2",
+    "dompurify": "^2.3.3",
+    "jsdom": "^19.0.0"
   }
 }
