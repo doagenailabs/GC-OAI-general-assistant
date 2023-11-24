@@ -5,18 +5,26 @@ async function loadExistingThread() {
             const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
             const messages = await response.json();
 
-            const displayedMessageIds = new Set();
-            messages.data.sort((a, b) => a.created_at - b.created_at).forEach(message => {
-                if (!displayedMessageIds.has(message.id)) {
-                    displayedMessageIds.add(message.id);
-                    const isUserMessage = message.role === "user";
-                    message.content.forEach(contentPart => {
-                        if (contentPart.type === "text") {
-                            displayMessage(contentPart.text.value, isUserMessage);
-                        }
-                    });
+            // Sort messages by created_at timestamp
+            const sortedMessages = messages.data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+            // Process all messages and sanitize if needed
+            for (const message of sortedMessages) {
+                const isUserMessage = message.role === "user";
+                let displayContent;
+
+                if (isUserMessage) {
+                    // User messages are not sent for sanitization
+                    displayContent = message.content.text.value;
+                } else {
+                    // Assistant messages are sent for sanitization
+                    const sanitizedContent = await sanitizeHTML(message.content.text.value);
+                    displayContent = sanitizedContent;
                 }
-            });
+
+                // Display the message after sanitization
+                displayMessage(displayContent, isUserMessage);
+            }
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
@@ -133,21 +141,14 @@ function showLoadingIcon(show) {
     }
 }
 
-async function displayMessage(message, isUserMessage) {
+async function displayMessage(content, isUserMessage) {
+    
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
-
-    if (isUserMessage) {
-        messageElement.textContent = message;
-        messageElement.classList.add('user-message');
-    } else {
-        const safeHTML = await sanitizeHTML(message);
-        messageElement.innerHTML = safeHTML; 
-        messageElement.classList.add('assistant-message');
-    }
-
+    messageElement.innerHTML = content; // Set innerHTML to the sanitized content
+    messageElement.classList.add(isUserMessage ? 'user-message' : 'assistant-message');
     chatWindow.appendChild(messageElement);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
+    chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to the latest message
 }
 
 async function sanitizeHTML(str) {
