@@ -1,7 +1,9 @@
 const { JSDOM } = require('jsdom');
 const createDOMPurify = require('dompurify');
 
+// Create a new JSDOM instance and window object
 const window = new JSDOM('').window;
+// Create a DOMPurify instance using the window object
 const DOMPurify = createDOMPurify(window);
 
 function extractAndSanitizeHTML(input) {
@@ -12,12 +14,12 @@ function extractAndSanitizeHTML(input) {
     lines.forEach(line => {
         // Check if the line contains HTML tags
         if (/<[a-z][\s\S]*>/i.test(line)) {
-            // If it does, sanitize and keep it as HTML
+            // If it does, sanitize and append it directly
             resultHTML += DOMPurify.sanitize(line);
         } else {
             // If not, escape and wrap in paragraph tags
-            const textNode = document.createTextNode(line);
-            const p = document.createElement('p');
+            const textNode = window.document.createTextNode(line);
+            const p = window.document.createElement('p');
             p.appendChild(textNode);
             resultHTML += p.outerHTML;
         }
