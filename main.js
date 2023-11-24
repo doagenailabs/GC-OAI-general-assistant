@@ -1,4 +1,3 @@
-
 async function loadExistingThread() {
     const threadId = localStorage.getItem('currentThreadId');
     if (threadId) {
@@ -6,18 +5,27 @@ async function loadExistingThread() {
             const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
             const messages = await response.json();
 
-            const displayedMessageIds = new Set();
-            messages.data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).forEach(message => {
-                if (!displayedMessageIds.has(message.id)) {
-                    displayedMessageIds.add(message.id);
-                    const isUserMessage = message.role === "user";
-                    message.content.forEach(contentPart => {
-                        if (contentPart.type === "text") {
-                            displayMessage(contentPart.text.value, isUserMessage);
-                        }
-                    });
-                }
-            });
+            // Create a document fragment to hold messages
+            const fragment = document.createDocumentFragment();
+
+            // Process messages in order
+            for (const message of messages.data.sort((a, b) => a.created_at - b.created_at)) {
+                const isUserMessage = message.role === "user";
+                // Sanitize message if it's from the assistant
+                const content = isUserMessage ? message.content : await sanitizeHTML(message.content);
+                // Create message element
+                const messageElement = document.createElement('div');
+                messageElement.classList.add(isUserMessage ? 'user-message' : 'assistant-message');
+                messageElement.innerHTML = content;
+                // Append to fragment
+                fragment.appendChild(messageElement);
+            }
+
+            // Append the fragment to the chat window
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.appendChild(fragment);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
