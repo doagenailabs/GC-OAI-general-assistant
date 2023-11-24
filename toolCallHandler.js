@@ -26,6 +26,10 @@ async function handleToolCalls(toolCalls, threadId, runId) {
                 const options = JSON.parse(call.function.arguments);
                 resultMessage = await window.getQueuesList(options);
                 break;    
+           case 'getEstimatedWaitTime':
+                const args = JSON.parse(call.function.arguments);
+                resultMessage = await window.getEstimatedWaitTime(args.queueId, args.conversationId);
+                break;             
             // Add cases for other functions as needed
         }
 
