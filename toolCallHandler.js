@@ -22,6 +22,10 @@ async function handleToolCalls(toolCalls, threadId, runId) {
                 const queueIdForMembers = JSON.parse(call.function.arguments).queueId;
                 resultMessage = await window.getQueueMembers(queueIdForMembers);
                 break;
+            case 'getQueuesList':
+                const options = JSON.parse(call.function.arguments);
+                resultMessage = await window.getQueuesList(options);
+                break;    
             // Add cases for other functions as needed
         }
 
