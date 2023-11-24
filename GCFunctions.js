@@ -98,3 +98,30 @@ async function getQueuesList(opts) {
 }
 
 window.getQueuesList = getQueuesList;
+
+// GCFunctions.js
+async function getEstimatedWaitTime(queueId, conversationId) {
+    if (!window.platformClient) {
+        console.error("Platform client is not available");
+        return "Error accessing platform client";
+    }
+
+    let apiInstance = new window.platformClient.RoutingApi();
+    let opts = {};
+
+    if (conversationId) {
+        opts['conversationId'] = conversationId;
+    }
+
+    try {
+        let waitTimeData = await apiInstance.getRoutingQueueEstimatedwaittime(queueId, opts);
+        console.log("Estimated wait time retrieved successfully.");
+        return JSON.stringify(waitTimeData);
+    } catch (error) {
+        console.error('Error in getEstimatedWaitTime:', error);
+        return `Error retrieving estimated wait time: ${error.message}`;
+    }
+}
+
+window.getEstimatedWaitTime = getEstimatedWaitTime;
+
