@@ -78,3 +78,23 @@ async function getQueueMembers(queueId) {
 }
 
 window.getQueueMembers = getQueueMembers;
+
+async function getQueuesList(opts) {
+    if (!window.platformClient) {
+        console.error("Platform client is not available");
+        return "Error accessing platform client";
+    }
+
+    let apiInstance = new window.platformClient.RoutingApi();
+
+    try {
+        let queuesList = await apiInstance.getRoutingQueues(opts);
+        console.log("Queues list retrieved successfully.");
+        return JSON.stringify(queuesList);
+    } catch (error) {
+        console.error('Error in getQueuesList:', error);
+        return `Error retrieving queues list: ${error.message}`;
+    }
+}
+
+window.getQueuesList = getQueuesList;
