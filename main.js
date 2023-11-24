@@ -133,36 +133,40 @@ function showLoadingIcon(show) {
     }
 }
 
-function displayMessage(message, isUserMessage) {
+async function displayMessage(message, isUserMessage) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
 
     if (isUserMessage) {
         messageElement.textContent = message;
-        messageElement.classList.add('received-message');
+        messageElement.classList.add('user-message');
     } else {
-        if (/<[a-z][\s\S]*>/i.test(message)) {
-            // Remove Markdown code block syntax and newlines
-            let formattedMessage = message.replace(/```html\n/g, '').replace(/\n```/g, '').replace(/\n/g, '<br>');
-
-            // Safely set HTML content
-            messageElement.innerHTML = sanitizeHTML(formattedMessage);
-            messageElement.classList.add('html-message');
-        } else {
-            messageElement.textContent = message;
-            messageElement.classList.add('sent-message');
-        }
+        const safeHTML = await sanitizeHTML(message);
+        messageElement.innerHTML = safeHTML; 
+        messageElement.classList.add('assistant-message');
     }
 
     chatWindow.appendChild(messageElement);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-function sanitizeHTML(str) {
-    const temp = document.createElement('div');
-    temp.textContent = str;
-    return temp.innerHTML;
+async function sanitizeHTML(str) {
+    try {
+        const response = await fetch('/api/serverSanitizeHTML', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ html: str })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.safeHTML;
+    } catch (error) {
+        console.error('Error during HTML sanitization', error);
+        return ''; 
+    }
 }
-
 
 function handleUserMessage(userMessage) {
     displayMessage(userMessage, true); 
