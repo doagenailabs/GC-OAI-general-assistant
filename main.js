@@ -3,32 +3,20 @@ async function loadExistingThread() {
     if (threadId) {
         try {
             const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
-            const data = await response.json();
+            const messages = await response.json();
 
-            if (data && data.messages) {
-                const sortedMessages = data.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-                const chatWindow = document.getElementById('chat-window');
-                chatWindow.innerHTML = '';  // Clear existing messages
-
-                for (const message of sortedMessages) {
-                    // Ensure message.content is a string
-                    const messageText = typeof message.content === 'string' ? message.content : message.content.text;
-
-                    // If the message is from the assistant, sanitize it
-                    const displayText = message.role === 'assistant' ? await sanitizeHTML(messageText) : messageText;
-
-                    // Create message element
-                    const messageElement = document.createElement('div');
-                    messageElement.className = message.role === 'user' ? 'user-message' : 'assistant-message';
-                    messageElement.innerHTML = displayText;  // Use innerHTML if messageText contains HTML
-                    
-                    // Append message to the chat window
-                    chatWindow.appendChild(messageElement);
+            const displayedMessageIds = new Set();
+            messages.data.sort((a, b) => a.created_at - b.created_at).forEach(message => {
+                if (!displayedMessageIds.has(message.id)) {
+                    displayedMessageIds.add(message.id);
+                    const isUserMessage = message.role === "user";
+                    message.content.forEach(contentPart => {
+                        if (contentPart.type === "text") {
+                            displayMessage(contentPart.text.value, isUserMessage);
+                        }
+                    });
                 }
-
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }
+            });
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
