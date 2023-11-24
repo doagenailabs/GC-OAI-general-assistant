@@ -1,3 +1,4 @@
+
 async function loadExistingThread() {
     const threadId = localStorage.getItem('currentThreadId');
     if (threadId) {
@@ -5,25 +6,41 @@ async function loadExistingThread() {
             const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
             const messages = await response.json();
 
-            // Add a property to determine if sanitization is needed
-            const processedMessages = await Promise.all(messages.data.map(async (message) => {
-                const isUserMessage = message.role === "user";
-                message.needsSanitization = !isUserMessage;
-                if (message.needsSanitization) {
-                    message.sanitizedContent = await sanitizeHTML(message.content.text.value);
+            const displayedMessageIds = new Set();
+            messages.data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).forEach(message => {
+                if (!displayedMessageIds.has(message.id)) {
+                    displayedMessageIds.add(message.id);
+                    const isUserMessage = message.role === "user";
+                    message.content.forEach(contentPart => {
+                        if (contentPart.type === "text") {
+                            displayMessage(contentPart.text.value, isUserMessage);
+                        }
+                    });
                 }
-                return message;
-            }));
-
-            // Now that all messages are processed, sort and display them
-            processedMessages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).forEach(message => {
-                displayMessage(message.needsSanitization ? message.sanitizedContent : message.content.text.value, message.role === "user");
             });
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
     }
 }
+
+async function displayMessage(message, isUserMessage) {
+    const chatWindow = document.getElementById('chat-window');
+    const messageElement = document.createElement('div');
+
+    if (isUserMessage) {
+        messageElement.textContent = message;
+        messageElement.classList.add('user-message');
+    } else {
+        const safeHTML = await sanitizeHTML(message);
+        messageElement.innerHTML = safeHTML; 
+        messageElement.classList.add('assistant-message');
+    }
+
+    chatWindow.appendChild(messageElement);
+    chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to the latest message
+}
+
 
 async function handleUserInput(userMessage, file) {
     showLoadingIcon(true);
@@ -135,15 +152,6 @@ function showLoadingIcon(show) {
     }
 }
 
-function displayMessage(content, isUserMessage) {
-    
-    const chatWindow = document.getElementById('chat-window');
-    const messageElement = document.createElement('div');
-    messageElement.innerHTML = content; // Use the content directly
-    messageElement.classList.add(isUserMessage ? 'user-message' : 'assistant-message');
-    chatWindow.appendChild(messageElement);
-    chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to the latest message
-}
 async function sanitizeHTML(str) {
     try {
         const response = await fetch('/api/serverSanitizeHTML', {
