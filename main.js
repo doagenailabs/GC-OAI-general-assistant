@@ -5,24 +5,42 @@ async function loadExistingThread() {
             const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
             const messages = await response.json();
 
-            const displayedMessageIds = new Set();
-            messages.data.sort((a, b) => a.created_at - b.created_at).forEach(message => {
+            // Sort messages by `created_at` in ascending order
+            const sortedMessages = messages.data.sort((a, b) => a.created_at - b.created_at);
+
+            // Use map() to create a promise for each message sanitization/display
+            const displayPromises = sortedMessages.map(async (message) => {
                 if (!displayedMessageIds.has(message.id)) {
                     displayedMessageIds.add(message.id);
                     const isUserMessage = message.role === "user";
-                    message.content.forEach(contentPart => {
+                    // Wait for the message to be sanitized before continuing
+                    const sanitizedContent = await Promise.all(message.content.map(async (contentPart) => {
                         if (contentPart.type === "text") {
-                            displayMessage(contentPart.text.value, isUserMessage);
+                            return sanitizeHTML(contentPart.text.value);
                         }
-                    });
+                        return '';
+                    }));
+
+                    // Combine sanitized content (if there are multiple content parts)
+                    const combinedSanitizedContent = sanitizedContent.join('');
+                    return { combinedSanitizedContent, isUserMessage };
                 }
             });
+
+            // Wait for all messages to be sanitized
+            const sanitizedMessages = await Promise.all(displayPromises);
+
+            sanitizedMessages.forEach(({ combinedSanitizedContent, isUserMessage }) => {
+                if (combinedSanitizedContent) {
+                    displayMessage(combinedSanitizedContent, isUserMessage);
+                }
+            });
+
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
     }
 }
-
 
 async function displayMessage(message, isUserMessage) {
     const chatWindow = document.getElementById('chat-window');
