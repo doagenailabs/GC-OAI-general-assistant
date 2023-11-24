@@ -3,34 +3,38 @@ async function loadExistingThread() {
     if (threadId) {
         try {
             const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
-            const messages = await response.json();
+            const data = await response.json();
 
-            // Create a document fragment to hold messages
-            const fragment = document.createDocumentFragment();
+            if (data && data.messages) {
+                const sortedMessages = data.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-            // Process messages in order
-            for (const message of messages.data.sort((a, b) => a.created_at - b.created_at)) {
-                const isUserMessage = message.role === "user";
-                // Sanitize message if it's from the assistant
-                const content = isUserMessage ? message.content : await sanitizeHTML(message.content);
-                // Create message element
-                const messageElement = document.createElement('div');
-                messageElement.classList.add(isUserMessage ? 'user-message' : 'assistant-message');
-                messageElement.innerHTML = content;
-                // Append to fragment
-                fragment.appendChild(messageElement);
+                const chatWindow = document.getElementById('chat-window');
+                chatWindow.innerHTML = '';  // Clear existing messages
+
+                for (const message of sortedMessages) {
+                    // Ensure message.content is a string
+                    const messageText = typeof message.content === 'string' ? message.content : message.content.text;
+
+                    // If the message is from the assistant, sanitize it
+                    const displayText = message.role === 'assistant' ? await sanitizeHTML(messageText) : messageText;
+
+                    // Create message element
+                    const messageElement = document.createElement('div');
+                    messageElement.className = message.role === 'user' ? 'user-message' : 'assistant-message';
+                    messageElement.innerHTML = displayText;  // Use innerHTML if messageText contains HTML
+                    
+                    // Append message to the chat window
+                    chatWindow.appendChild(messageElement);
+                }
+
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }
-
-            // Append the fragment to the chat window
-            const chatWindow = document.getElementById('chat-window');
-            chatWindow.appendChild(fragment);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
     }
 }
+
 
 async function displayMessage(message, isUserMessage) {
     const chatWindow = document.getElementById('chat-window');
