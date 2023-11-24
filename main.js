@@ -5,26 +5,20 @@ async function loadExistingThread() {
             const response = await fetch(`/api/displayAssistantResponse?threadId=${threadId}`);
             const messages = await response.json();
 
-            // Sort messages by created_at timestamp
-            const sortedMessages = messages.data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-            // Process all messages and sanitize if needed
-            for (const message of sortedMessages) {
+            // Add a property to determine if sanitization is needed
+            const processedMessages = await Promise.all(messages.data.map(async (message) => {
                 const isUserMessage = message.role === "user";
-                let displayContent;
-
-                if (isUserMessage) {
-                    // User messages are not sent for sanitization
-                    displayContent = message.content.text.value;
-                } else {
-                    // Assistant messages are sent for sanitization
-                    const sanitizedContent = await sanitizeHTML(message.content.text.value);
-                    displayContent = sanitizedContent;
+                message.needsSanitization = !isUserMessage;
+                if (message.needsSanitization) {
+                    message.sanitizedContent = await sanitizeHTML(message.content.text.value);
                 }
+                return message;
+            }));
 
-                // Display the message after sanitization
-                displayMessage(displayContent, isUserMessage);
-            }
+            // Now that all messages are processed, sort and display them
+            processedMessages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).forEach(message => {
+                displayMessage(message.needsSanitization ? message.sanitizedContent : message.content.text.value, message.role === "user");
+            });
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
@@ -141,16 +135,15 @@ function showLoadingIcon(show) {
     }
 }
 
-async function displayMessage(content, isUserMessage) {
+function displayMessage(content, isUserMessage) {
     
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
-    messageElement.innerHTML = content; // Set innerHTML to the sanitized content
+    messageElement.innerHTML = content; // Use the content directly
     messageElement.classList.add(isUserMessage ? 'user-message' : 'assistant-message');
     chatWindow.appendChild(messageElement);
     chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to the latest message
 }
-
 async function sanitizeHTML(str) {
     try {
         const response = await fetch('/api/serverSanitizeHTML', {
