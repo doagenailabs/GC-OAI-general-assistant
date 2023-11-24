@@ -136,15 +136,28 @@ function showLoadingIcon(show) {
 function displayMessage(message, isUserMessage) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
-    messageElement.textContent = message;
 
     if (isUserMessage) {
+        messageElement.textContent = message;
         messageElement.classList.add('received-message');
     } else {
-        messageElement.classList.add('sent-message');
+        // Check if the message is HTML
+        if (/<[a-z][\s\S]*>/i.test(message)) {
+            messageElement.innerHTML = sanitizeHTML(message);
+            messageElement.classList.add('html-message');
+        } else {
+            messageElement.textContent = message;
+            messageElement.classList.add('sent-message');
+        }
     }
 
     chatWindow.appendChild(messageElement);
+}
+
+function sanitizeHTML(str) {
+    const temp = document.createElement('div');
+    temp.textContent = str;
+    return temp.innerHTML;
 }
 
 function handleUserMessage(userMessage) {
