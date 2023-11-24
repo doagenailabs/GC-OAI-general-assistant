@@ -5,26 +5,25 @@ const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
 
 function extractAndSanitizeHTML(input) {
-    // This regular expression is simple and may not catch all edge cases of HTML content.
-    // It assumes that HTML content will be enclosed in <html> tags.
-    // It might be needed a more robust solution depending on the requirements.
-    const htmlRegex = /<html>(.*?)<\/html>/gs;
-    let match;
-    let extractedHTML = '';
+    // Split the input by lines and process each line separately.
+    const lines = input.split('\n');
+    let resultHTML = '';
 
-    while ((match = htmlRegex.exec(input)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (match.index === htmlRegex.lastIndex) {
-            htmlRegex.lastIndex++;
+    lines.forEach(line => {
+        // Check if the line contains HTML tags
+        if (/<[a-z][\s\S]*>/i.test(line)) {
+            // If it does, sanitize and keep it as HTML
+            resultHTML += DOMPurify.sanitize(line);
+        } else {
+            // If not, escape and wrap in paragraph tags
+            const textNode = document.createTextNode(line);
+            const p = document.createElement('p');
+            p.appendChild(textNode);
+            resultHTML += p.outerHTML;
         }
-        
-        // The full match is at index 0, whereas captured groups start from index 1
-        extractedHTML += match[1];
-    }
+    });
 
-    // Sanitize the extracted HTML
-    const cleanHTML = DOMPurify.sanitize(extractedHTML);
-    return cleanHTML;
+    return resultHTML;
 }
 
 async function serverSanitizeHTML(req, res) {
