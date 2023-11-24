@@ -7,25 +7,13 @@ const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
 
 function extractAndSanitizeHTML(input) {
-    // Split the input by lines and process each line separately.
-    const lines = input.split('\n');
-    let resultHTML = '';
+    // Sanitize the input as it is, assuming it's already in HTML format
+    const cleanHTML = DOMPurify.sanitize(input, { ADD_TAGS: ["html"] });
 
-    lines.forEach(line => {
-        // Check if the line contains HTML tags
-        if (/<[a-z][\s\S]*>/i.test(line)) {
-            // If it does, sanitize and append it directly
-            resultHTML += DOMPurify.sanitize(line);
-        } else {
-            // If not, escape and wrap in paragraph tags
-            const textNode = window.document.createTextNode(line);
-            const p = window.document.createElement('p');
-            p.appendChild(textNode);
-            resultHTML += p.outerHTML;
-        }
-    });
+    // Replace escaped HTML tags back to their original form if they were escaped
+    const unescapedHTML = cleanHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 
-    return resultHTML;
+    return unescapedHTML;
 }
 
 async function serverSanitizeHTML(req, res) {
