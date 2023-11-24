@@ -155,7 +155,7 @@ body, html {
     padding: 12px;
     border-radius: 25px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    opacity: 0;
+    opacity: 1;
     animation: fadeInMove 0.5s forwards;
     transition: transform 0.2s, box-shadow 0.3s;
     width: calc(100% - 24px); /* Adjust width to account for padding */
