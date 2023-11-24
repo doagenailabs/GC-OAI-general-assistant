@@ -8,57 +8,41 @@ async function loadExistingThread() {
             // Sort messages by `created_at` in ascending order
             const sortedMessages = messages.data.sort((a, b) => a.created_at - b.created_at);
 
-            // Use map() to create a promise for each message sanitization/display
-            const displayPromises = sortedMessages.map(async (message) => {
+            const displayedMessageIds = new Set(); // Define the set to track displayed messages
+
+            for (const message of sortedMessages) {
                 if (!displayedMessageIds.has(message.id)) {
                     displayedMessageIds.add(message.id);
                     const isUserMessage = message.role === "user";
-                    // Wait for the message to be sanitized before continuing
-                    const sanitizedContent = await Promise.all(message.content.map(async (contentPart) => {
+                    // Handle each part of the message content
+                    for (const contentPart of message.content) {
                         if (contentPart.type === "text") {
-                            return sanitizeHTML(contentPart.text.value);
+                            const safeHTML = await sanitizeHTML(contentPart.text.value);
+                            displayMessage(safeHTML, isUserMessage);
                         }
-                        return '';
-                    }));
-
-                    // Combine sanitized content (if there are multiple content parts)
-                    const combinedSanitizedContent = sanitizedContent.join('');
-                    return { combinedSanitizedContent, isUserMessage };
+                    }
                 }
-            });
-
-            // Wait for all messages to be sanitized
-            const sanitizedMessages = await Promise.all(displayPromises);
-
-            sanitizedMessages.forEach(({ combinedSanitizedContent, isUserMessage }) => {
-                if (combinedSanitizedContent) {
-                    displayMessage(combinedSanitizedContent, isUserMessage);
-                }
-            });
-
+            }
         } catch (error) {
             console.error('Error loading existing thread:', error);
         }
     }
 }
 
-async function displayMessage(message, isUserMessage) {
+function displayMessage(message, isUserMessage) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
+    messageElement.innerHTML = message; 
 
     if (isUserMessage) {
-        messageElement.textContent = message;
         messageElement.classList.add('user-message');
     } else {
-        const safeHTML = await sanitizeHTML(message);
-        messageElement.innerHTML = safeHTML; 
         messageElement.classList.add('assistant-message');
     }
 
     chatWindow.appendChild(messageElement);
     chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to the latest message
 }
-
 
 async function handleUserInput(userMessage, file) {
     showLoadingIcon(true);
