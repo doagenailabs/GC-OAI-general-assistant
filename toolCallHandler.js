@@ -1,6 +1,5 @@
 async function handleToolCalls(toolCalls, threadId, runId) {
     const toolCallPromises = toolCalls.map(async (call) => {
-
         if (localStorage.getItem(call.id) === 'completed') {
             return null;
         }
@@ -10,6 +9,18 @@ async function handleToolCalls(toolCalls, threadId, runId) {
             case 'deleteGroup':
                 const groupId = JSON.parse(call.function.arguments).groupId;
                 resultMessage = await window.deleteGroup(groupId);
+                break;
+            case 'getQueueDetails':
+                const queueIdForDetails = JSON.parse(call.function.arguments).queueId;
+                resultMessage = await window.getQueueDetails(queueIdForDetails);
+                break;
+            case 'getEstimatedWaitTime':
+                const argsWaitTime = JSON.parse(call.function.arguments);
+                resultMessage = await window.getEstimatedWaitTime(argsWaitTime.queueId, argsWaitTime.mediaType);
+                break;
+            case 'getQueueMembers':
+                const queueIdForMembers = JSON.parse(call.function.arguments).queueId;
+                resultMessage = await window.getQueueMembers(queueIdForMembers);
                 break;
             // Add cases for other functions as needed
         }
