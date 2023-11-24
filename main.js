@@ -141,9 +141,12 @@ function displayMessage(message, isUserMessage) {
         messageElement.textContent = message;
         messageElement.classList.add('received-message');
     } else {
-        // Check if the message is HTML
         if (/<[a-z][\s\S]*>/i.test(message)) {
-            messageElement.innerHTML = sanitizeHTML(message);
+            // Remove Markdown code block syntax and newlines
+            let formattedMessage = message.replace(/```html\n/g, '').replace(/\n```/g, '').replace(/\n/g, '<br>');
+
+            // Safely set HTML content
+            messageElement.innerHTML = sanitizeHTML(formattedMessage);
             messageElement.classList.add('html-message');
         } else {
             messageElement.textContent = message;
@@ -159,6 +162,7 @@ function sanitizeHTML(str) {
     temp.textContent = str;
     return temp.innerHTML;
 }
+
 
 function handleUserMessage(userMessage) {
     displayMessage(userMessage, true); 
