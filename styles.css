@@ -9,6 +9,7 @@ body, html {
     align-items: center;
 }
 
+/* Initial UI Styles */
 #initial-ui {
     display: flex;
     flex-direction: column;
@@ -84,6 +85,7 @@ body, html {
     width: 100%; 
 }
 
+/* Chat Container Styles */
 #chat-container {
     display: flex;
     flex-direction: column;
@@ -106,6 +108,7 @@ body, html {
     flex-direction: column;
 }
 
+/* Chat Input Styles */
 #chat-input-container {
     display: flex;
     padding: 15px;
@@ -143,6 +146,7 @@ body, html {
     box-shadow: 0 5px 10px rgba(0,123,255,0.5);
 }
 
+/* Message Styles */
 .sent-message, .received-message {
     margin-bottom: 15px;
     padding: 12px;
@@ -181,6 +185,60 @@ body, html {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* HTML Message Styles */
+.html-message {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: #333;
+    font-size: 16px;
+}
+
+.html-message h1, .html-message h2, .html-message h3, .html-message h4, .html-message h5, .html-message h6 {
+    color: #007BFF;
+}
+
+.html-message p {
+    margin-bottom: 1em;
+}
+
+.html-message a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.html-message a:hover {
+    text-decoration: underline;
+}
+
+.html-message ul, .html-message ol {
+    margin: 1em 0;
+    padding-left: 20px;
+}
+
+.html-message img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.html-message table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+
+.html-message th, .html-message td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
     #chat-window {
         padding: 10px;
@@ -215,6 +273,7 @@ body, html {
     }
 }
 
+/* Delete Conversation Button Styles */
 #deleteConversationBtn {
     padding: 10px;
     background-color: blue;
@@ -228,6 +287,7 @@ body, html {
     background-color: darkblue;
 }
 
+/* Logo and Loading Icon Styles */
 #gc-logo {
     height: 80px;
     width: auto;
