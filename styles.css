@@ -23,18 +23,30 @@ body, html {
 }
 
 #initial-ui button {
-    padding: 10px 20px;
-    margin: 5px;
+    padding: 15px 30px;
+    margin: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     background-color: #007BFF;
     color: white;
-    transition: background-color 0.3s;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-bottom: 4px solid #0056b3;
 }
 
 #initial-ui button:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+#initial-ui button:active {
+    transform: translateY(-1px);
+    border-bottom: 1px solid #0056b3;
 }
 
 #logo-container {
