@@ -150,7 +150,7 @@ body, html {
 }
 
 /* Message Styles */
-.sent-message, .received-message {
+.assistant-message, .user-message {
     margin-bottom: 15px;
     padding: 12px;
     border-radius: 25px;
@@ -167,23 +167,23 @@ body, html {
     }
 }
 
-.sent-message {
+.assistant-message {
     align-self: flex-end;
     background-color: #007BFF;
     color: white;
 }
 
-.sent-message:hover {
+.assistant-message:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0,123,255,0.5);
 }
 
-.received-message {
+.user-message {
     align-self: flex-start;
     background-color: #e6e6e6;
 }
 
-.received-message:hover {
+.user-message:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
