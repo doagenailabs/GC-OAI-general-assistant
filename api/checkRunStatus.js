@@ -15,6 +15,7 @@ async function checkRunStatus(req, res) {
         // Don't send sensitive information to client-side
         delete runStatus.instructions;
         delete runStatus.model;
+        delete runStatus.tools;
 
         res.json(runStatus);
     } catch (error) {
