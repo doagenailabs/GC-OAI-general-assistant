@@ -115,7 +115,7 @@ async function handleUserInput(userMessage, file) {
                 const toolCalls = assistantResponse.required_action.submit_tool_outputs.tool_calls;
 
                 if (Array.isArray(toolCalls) && toolCalls.length > 0) {
-                    await window.handleToolCalls(toolCalls, threadId, run.id);
+                    await handleToolCalls(toolCalls, threadId, run.id);
                 }
 
                 run = await fetch(`/api/checkRunStatus?threadId=${threadId}&runId=${run.id}`)
