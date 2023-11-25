@@ -40,6 +40,7 @@ async function runAssistant(req, res) {
         // Don't send sensitive information to client-side
         delete run.instructions;
         delete run.model;
+        delete run.tools;
 
         res.json(run);
     } catch (error) {
