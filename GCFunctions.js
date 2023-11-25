@@ -125,3 +125,44 @@ async function getEstimatedWaitTime(queueId, conversationId) {
 
 window.getEstimatedWaitTime = getEstimatedWaitTime;
 
+async function modifyQueueMembers(queueId, members, isDelete) {
+    if (!window.platformClient) {
+        console.error("Platform client is not available");
+        return "Error accessing platform client";
+    }
+
+    let apiInstance = new window.platformClient.RoutingApi();
+    let opts = {
+        '_delete': isDelete // Boolean | True to delete queue members, false to add them
+    };
+
+    try {
+        await apiInstance.postRoutingQueueMembers(queueId, members, opts);
+        return isDelete ? "Queue members deleted successfully." : "Queue members added successfully.";
+    } catch (error) {
+        console.error('Error in modifyQueueMembers:', error);
+        return `Error modifying queue members: ${error.message}`;
+    }
+}
+
+window.modifyQueueMembers = modifyQueueMembers;
+
+async function searchUsers(searchCriteria) {
+    if (!window.platformClient) {
+        console.error("Platform client is not available");
+        return "Error accessing platform client";
+    }
+
+    let apiInstance = new window.platformClient.UsersApi();
+
+    try {
+        let users = await apiInstance.postUsersSearch(searchCriteria);
+        console.log("Users search successful.");
+        return JSON.stringify(users);
+    } catch (error) {
+        console.error('Error in searchUsers:', error);
+        return `Error searching users: ${error.message}`;
+    }
+}
+
+window.searchUsers = searchUsers;
