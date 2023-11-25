@@ -152,17 +152,16 @@ body, html {
 /* Message Styles */
 .assistant-message, .user-message {
     margin-bottom: 15px;
-    padding: 12px;
-    border-radius: 25px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    padding: 15px 20px; /* Adjusted padding for better readability */
+    border-radius: 25px; /* Rounded corners */
     opacity: 1;
     animation: fadeInMove 0.5s forwards;
-    transition: transform 0.2s, box-shadow 0.3s;
-    width: calc(100% - 24px); /* Adjust width to account for padding */
+    width: calc(100% - 40px); /* Adjust width to account for new padding */
     background: #fff; /* Background color for HTML content */
     line-height: 1.6; /* Line height for better readability */
     color: #333; /* Text color */
     font-size: 16px; /* Font size */
+    font-family: 'Lato', sans-serif; /* Consistent font family */
 }
 
 .assistant-message {
@@ -173,8 +172,8 @@ body, html {
 
 .assistant-message:hover,
 .user-message:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,123,255,0.5);
+    transform: perspective(500px) translateZ(20px); /* 3D lift effect on hover */
+    box-shadow: 0 15px 30px rgba(0, 123, 255, 0.5); /* Dynamic shadow on hover */
 }
 
 /* HTML Message specific styles */
@@ -186,9 +185,11 @@ body, html {
 .assistant-message a, .user-message a {
     color: #007BFF; /* Link color */
     text-decoration: none;
+    transition: color 0.3s ease;
 }
 
 .assistant-message a:hover, .user-message a:hover {
+    color: #0056b3; /* Darker color on hover */
     text-decoration: underline; /* Link hover effect */
 }
 
