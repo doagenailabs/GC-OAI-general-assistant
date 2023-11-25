@@ -168,12 +168,15 @@ body, html {
     align-self: flex-end;
     background-color: #007BFF;
     color: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(0);
+    transition: transform 0.2s, box-shadow 0.3s;
 }
 
 .assistant-message:hover,
 .user-message:hover {
-    transform: perspective(500px) translateZ(20px); /* 3D lift effect on hover */
-    box-shadow: 0 15px 30px rgba(0, 123, 255, 0.5); /* Dynamic shadow on hover */
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,123,255,0.5);
 }
 
 /* HTML Message specific styles */
@@ -193,10 +196,19 @@ body, html {
     text-decoration: underline; /* Link hover effect */
 }
 
+/* Enhanced Table Styles */
 .assistant-message table, .user-message table {
     width: 100%; /* Full width tables */
     border-collapse: collapse; /* Collapse borders for a clean look */
     margin-bottom: 1em; /* Spacing after tables */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Shadow for 3D effect */
+    transform: perspective(500px) translateZ(0); /* Adds a 3D effect */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.assistant-message table:hover, .user-message table:hover {
+    transform: perspective(500px) translateZ(10px); /* 3D lift effect on hover */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* Dynamic shadow on hover */
 }
 
 .assistant-message th, .assistant-message td,
@@ -204,6 +216,13 @@ body, html {
     border: 1px solid #ddd; /* Border for table cells */
     padding: 8px; /* Padding inside table cells */
     text-align: left; /* Align text to the left */
+    background: #f8f8f8; /* Slightly different background for cells */
+}
+
+.assistant-message th,
+.user-message th {
+    background: #e7e7e7; /* Darker background for table headers */
+    color: #333; /* Text color for headers */
 }
 
 /* Responsive Styles */
