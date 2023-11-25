@@ -29,7 +29,15 @@ async function handleToolCalls(toolCalls, threadId, runId) {
            case 'getEstimatedWaitTime':
                 const args = JSON.parse(call.function.arguments);
                 resultMessage = await window.getEstimatedWaitTime(args.queueId, args.conversationId);
-                break;             
+                break;        
+           case 'searchUsers':
+                const searchCriteria = JSON.parse(call.function.arguments).searchCriteria;
+                resultMessage = await window.searchUsers(searchCriteria);
+                break;
+           case 'modifyQueueMembers':
+                const args = JSON.parse(call.function.arguments);
+                resultMessage = await window.modifyQueueMembers(args.queueId, args.members, args.isDelete);
+                break;     
             // Add cases for other functions as needed
         }
 
