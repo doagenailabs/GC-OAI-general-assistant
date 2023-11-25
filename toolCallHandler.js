@@ -14,10 +14,6 @@ async function handleToolCalls(toolCalls, threadId, runId) {
                 const queueIdForDetails = JSON.parse(call.function.arguments).queueId;
                 resultMessage = await window.getQueueDetails(queueIdForDetails);
                 break;
-            case 'getEstimatedWaitTime':
-                const argsWaitTime = JSON.parse(call.function.arguments);
-                resultMessage = await window.getEstimatedWaitTime(argsWaitTime.queueId, argsWaitTime.mediaType);
-                break;
             case 'getQueueMembers':
                 const queueIdForMembers = JSON.parse(call.function.arguments).queueId;
                 resultMessage = await window.getQueueMembers(queueIdForMembers);
