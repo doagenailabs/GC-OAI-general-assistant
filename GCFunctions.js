@@ -166,3 +166,55 @@ async function searchUsers(searchCriteria) {
 }
 
 window.searchUsers = searchUsers;
+
+async function handleConversationDetailJob(jobParams) {
+    if (!window.platformClient) {
+        console.error("Platform client is not available");
+        return "Error: Platform client not available";
+    }
+
+    let apiInstance = new window.platformClient.AnalyticsApi();
+    let jobId;
+
+    // Step 1: Submit the job
+    try {
+        const response = await apiInstance.postAnalyticsConversationsDetailsJobs(jobParams);
+        jobId = response.id;
+        console.log("Conversation detail job submitted successfully. Job ID:", jobId);
+    } catch (error) {
+        console.error('Error submitting conversation detail job:', error);
+        return `Error submitting conversation detail job: ${error.message}`;
+    }
+
+    // Step 2: Poll for job status
+    let jobStatus;
+    try {
+        do {
+            const statusResponse = await apiInstance.getAnalyticsConversationsDetailsJob(jobId);
+            jobStatus = statusResponse.state;
+            console.log("Current job status:", jobStatus);
+            if (jobStatus === "FAILED" || jobStatus === "CANCELLED" || jobStatus === "EXPIRED") {
+                return `Job ended with status: ${jobStatus}`;
+            }
+            if (jobStatus !== "FULFILLED") {
+                await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before polling again
+            }
+        } while (jobStatus !== "FULFILLED");
+    } catch (error) {
+        console.error('Error checking job status:', error);
+        return `Error checking job status: ${error.message}`;
+    }
+
+    // Step 3: Fetch job results
+    try {
+        const resultsResponse = await apiInstance.getAnalyticsConversationsDetailsJobResults(jobId, {});
+        console.log("Job results retrieved successfully.");
+        return resultsResponse; // Return the job results
+    } catch (error) {
+        console.error('Error fetching job results:', error);
+        return `Error fetching job results: ${error.message}`;
+    }
+}
+
+window.handleConversationDetailJob = handleConversationDetailJob;
+
