@@ -5,7 +5,7 @@ const apiKey = process.env.OPENAI_API_KEY;
 const groupAssistantId = process.env.OPENAI_GROUP_ASSISTANT_ID;
 const queueAssistantId = process.env.OPENAI_QUEUE_ASSISTANT_ID;
 const userAssistantId = process.env.OPENAI_USER_ASSISTANT_ID;
-const dataActionsAssistantId = process.env.OPENAI_DA_ASSISTANT_ID;
+const triggersAssistantId = process.env.OPENAI_TRIGGER_ASSISTANT_ID;
 const analyticsAssistantId = process.env.OPENAI_ANALYTICS_ASSISTANT_ID;
 
 const openai = new OpenAI({
@@ -27,8 +27,8 @@ async function runAssistant(req, res) {
         case 'users':
             assistantId = userAssistantId;
             break;
-        case 'data-actions':
-            assistantId = dataActionsAssistantId;
+        case 'triggers':
+            assistantId = triggersAssistantId;
             break;
         case 'analytics':
             assistantId = analyticsAssistantId;
