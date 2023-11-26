@@ -24,7 +24,7 @@
         <button id="btn-groups">Groups</button>
         <button id="btn-queues">Queues</button>
         <button id="btn-users">Users</button>
-        <button id="btn-data-actions">Data Actions</button>
+        <button id="btn-triggers">Triggers</button>
         <button id="btn-analytics">Analytics</button>    
     </div>
 
@@ -141,8 +141,8 @@
                 window.selectedAssistantId = 'users';
                 selectAssistantAndShowChat();
             });
-            document.getElementById('btn-data-actions').addEventListener('click', function() {
-                window.selectedAssistantId = 'data-actions';
+            document.getElementById('btn-triggers').addEventListener('click', function() {
+                window.selectedAssistantId = 'triggers';
                 selectAssistantAndShowChat();
             });    
             document.getElementById('btn-analytics').addEventListener('click', function() {
