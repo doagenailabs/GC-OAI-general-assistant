@@ -39,26 +39,6 @@ async function getQueueDetails(queueId) {
 
 window.getQueueDetails = getQueueDetails;
 
-async function getEstimatedWaitTime(queueId, mediaType) {
-    if (!window.platformClient) {
-        console.error("Platform client is not available");
-        return "Error accessing platform client";
-    }
-
-    let apiInstance = new window.platformClient.RoutingApi();
-
-    try {
-        let waitTime = await apiInstance.getRoutingQueueMediatypesEstimatedwaittime(queueId, mediaType);
-        console.log("Estimated wait time retrieved successfully.");
-        return JSON.stringify(waitTime);
-    } catch (error) {
-        console.error('Error in getEstimatedWaitTime:', error);
-        return `Error retrieving estimated wait time: ${error.message}`;
-    }
-}
-
-window.getEstimatedWaitTime = getEstimatedWaitTime;
-
 async function getQueueMembers(queueId) {
     if (!window.platformClient) {
         console.error("Platform client is not available");
@@ -98,32 +78,6 @@ async function getQueuesList(opts) {
 }
 
 window.getQueuesList = getQueuesList;
-
-// GCFunctions.js
-async function getEstimatedWaitTime(queueId, conversationId) {
-    if (!window.platformClient) {
-        console.error("Platform client is not available");
-        return "Error accessing platform client";
-    }
-
-    let apiInstance = new window.platformClient.RoutingApi();
-    let opts = {};
-
-    if (conversationId) {
-        opts['conversationId'] = conversationId;
-    }
-
-    try {
-        let waitTimeData = await apiInstance.getRoutingQueueEstimatedwaittime(queueId, opts);
-        console.log("Estimated wait time retrieved successfully.");
-        return JSON.stringify(waitTimeData);
-    } catch (error) {
-        console.error('Error in getEstimatedWaitTime:', error);
-        return `Error retrieving estimated wait time: ${error.message}`;
-    }
-}
-
-window.getEstimatedWaitTime = getEstimatedWaitTime;
 
 async function modifyQueueMembers(queueId, members, isDelete) {
     if (!window.platformClient) {
@@ -178,6 +132,7 @@ async function handleConversationDetailJob(jobParams) {
 
     // Step 1: Submit the job
     try {
+        console.log("Submitting conversation detail job with params:", jobParams);
         const response = await apiInstance.postAnalyticsConversationsDetailsJobs(jobParams);
         jobId = response.id;
         console.log("Conversation detail job submitted successfully. Job ID:", jobId);
@@ -190,13 +145,16 @@ async function handleConversationDetailJob(jobParams) {
     let jobStatus;
     try {
         do {
+            console.log("Polling for job status. Job ID:", jobId);
             const statusResponse = await apiInstance.getAnalyticsConversationsDetailsJob(jobId);
             jobStatus = statusResponse.state;
             console.log("Current job status:", jobStatus);
             if (jobStatus === "FAILED" || jobStatus === "CANCELLED" || jobStatus === "EXPIRED") {
+                console.log(`Job ended with status: ${jobStatus}`);
                 return `Job ended with status: ${jobStatus}`;
             }
             if (jobStatus !== "FULFILLED") {
+                console.log("Job not yet fulfilled. Waiting before next status check...");
                 await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before polling again
             }
         } while (jobStatus !== "FULFILLED");
@@ -207,6 +165,7 @@ async function handleConversationDetailJob(jobParams) {
 
     // Step 3: Fetch job results
     try {
+        console.log("Fetching job results for Job ID:", jobId);
         const resultsResponse = await apiInstance.getAnalyticsConversationsDetailsJobResults(jobId, {});
         console.log("Job results retrieved successfully.");
         return resultsResponse; // Return the job results
@@ -217,4 +176,5 @@ async function handleConversationDetailJob(jobParams) {
 }
 
 window.handleConversationDetailJob = handleConversationDetailJob;
+
 
