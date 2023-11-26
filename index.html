@@ -23,8 +23,8 @@
         <p>How can I help you?</p>
         <button id="btn-groups">Groups</button>
         <button id="btn-queues">Queues</button>
-        <button id="btn-users">Users</button>
         <button id="btn-analytics">Analytics</button> 
+        <button id="btn-users">Users</button>
         <button id="btn-triggers">Triggers</button>
     </div>
 
@@ -137,6 +137,10 @@
                 window.selectedAssistantId = 'queues';
                 selectAssistantAndShowChat();
             });
+            document.getElementById('btn-analytics').addEventListener('click', function() {
+                window.selectedAssistantId = 'analytics';
+                selectAssistantAndShowChat();
+            });            
             document.getElementById('btn-users').addEventListener('click', function() {
                 window.selectedAssistantId = 'users';
                 selectAssistantAndShowChat();
@@ -145,10 +149,6 @@
                 window.selectedAssistantId = 'triggers';
                 selectAssistantAndShowChat();
             });    
-            document.getElementById('btn-analytics').addEventListener('click', function() {
-                window.selectedAssistantId = 'analytics';
-                selectAssistantAndShowChat();
-            });
         
         });    
 
