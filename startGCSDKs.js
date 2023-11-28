@@ -6,7 +6,7 @@ function startGCSDKs() {
         const qParamGcHostOrigin = 'gcHostOrigin';
         const qParamEnvironment = 'gcTargetEnv';
         let language = '';  
-        let redirectUri = 'https://gcdoaccassistant.vercel.app';
+        let redirectUri = 'https://doagcccassistant.vercel.app';
         let userDetails = null;
         let gcHostOrigin = '';    
         assignConfiguration();
