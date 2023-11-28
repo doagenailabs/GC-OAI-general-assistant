@@ -16,9 +16,6 @@
 <body>
     <!-- Initial UI with buttons -->
     <div id="initial-ui">
-        <div id="logo-container">
-            <img src="assets/images/GC_logo.png" alt="Genesys Cloud Logo" id="gc-logo">
-        </div>
         
         <p>How can I help you?</p>
         <button id="btn-groups">Groups</button>
@@ -29,16 +26,23 @@
     </div>
 
 
-    <!-- Existing chat UI, initially hidden -->
-    <div id="chat-ui" style="display: none;">
-        <!-- DateTime Picker for Analytics Assistant -->
-        <div id="datetime-picker-container" style="display: none;">
-            <input type="datetime-local" id="start-datetime" />
-            <input type="datetime-local" id="end-datetime" />
-            <button id="submit-datetime">Save interval</button>
-        </div>	    
-
-        <div id="chat-container">
+	<!-- Existing chat UI, initially hidden -->
+	<div id="chat-ui" style="display: none;">
+	
+	    <!-- Genesys Cloud Logo -->
+	    <div class="logo-container">
+	        <img src="assets/images/GC_logo.png" alt="Genesys Cloud Logo" id="gc-logo">
+	    </div>
+	
+	    <!-- DateTime Picker for Analytics Assistant -->
+	    <div id="datetime-picker-container" style="display: none;">
+	        <input type="datetime-local" id="start-datetime" />
+	        <input type="datetime-local" id="end-datetime" />
+	        <button id="submit-datetime">Save interval</button>
+	    </div>
+	
+	    <!-- Chat Container -->
+	    <div id="chat-container">
             <div id="chat-window">
                 <!-- Chat messages will be displayed here -->
             </div>
