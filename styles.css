@@ -88,6 +88,33 @@ body, html {
     width: 100%; 
 }
 
+#datetime-picker-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+#datetime-picker-container input[type="datetime-local"] {
+    padding: 5px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#submit-datetime {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+}
+
+#submit-datetime:hover {
+    background-color: #0056b3;
+}
+
 /* Chat Container Styles */
 #chat-container {
     display: flex;
