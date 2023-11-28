@@ -121,15 +121,15 @@ async function searchUsers(searchCriteria) {
 
 window.searchUsers = searchUsers;
 
-async function handleConversationDetailJob(jobParams) {
+async function submitConversationDetailJob(jobParams) {
     if (!window.platformClient) {
-        console.error("handleConversationDetailJob - Platform client is not available");
+        console.error("submitConversationDetailJob - Platform client is not available");
         return "Error: Platform client not available";
     }
 
     // Check if the interval is set
     if (!window.interval || window.interval.trim() === '') {
-        console.error("handleConversationDetailJob - Interval is not set");
+        console.error("submitConversationDetailJob - Interval is not set");
         return "Error: Interval not set";
     }
 
@@ -144,20 +144,20 @@ async function handleConversationDetailJob(jobParams) {
 
     // Step 1: Submit the job
     try {
-        console.log("handleConversationDetailJob - Submitting job with params:", updatedJobParams);
+        console.log("submitConversationDetailJob - Submitting job with params:", updatedJobParams);
         const response = await apiInstance.postAnalyticsConversationsDetailsJobs(updatedJobParams);
-        console.log("handleConversationDetailJob - API response:", response);
+        console.log("submitConversationDetailJob - API response:", response);
 
         // Ensure jobId is extracted correctly from the response
         jobId = response.jobId;
         if (!jobId) {
-            console.error("handleConversationDetailJob - No Job ID in response", response);
+            console.error("submitConversationDetailJob - No Job ID in response", response);
             return "Error: No Job ID returned from API";
         }
 
-        console.log(`handleConversationDetailJob - Job submitted successfully. Job ID: ${jobId}`);
+        console.log(`submitConversationDetailJob - Job submitted successfully. Job ID: ${jobId}`);
     } catch (error) {
-        console.error('handleConversationDetailJob - Error submitting job:', error);
+        console.error('submitConversationDetailJob - Error submitting job:', error);
         return `Error submitting job: ${error.message}`;
     }
 
@@ -165,30 +165,30 @@ async function handleConversationDetailJob(jobParams) {
     let jobStatus;
     try {
         do {
-            console.log(`handleConversationDetailJob - Polling for status of Job ID: ${jobId}`);
+            console.log(`submitConversationDetailJob - Polling for status of Job ID: ${jobId}`);
             const statusResponse = await apiInstance.getAnalyticsConversationsDetailsJob(jobId);
             jobStatus = statusResponse.state;
-            console.log(`handleConversationDetailJob - Current job status: ${jobStatus}`);
+            console.log(`submitConversationDetailJob - Current job status: ${jobStatus}`);
             if (jobStatus !== "FULFILLED") {
                 await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before polling again
             }
         } while (jobStatus !== "FULFILLED");
     } catch (error) {
-        console.error('handleConversationDetailJob - Error checking job status:', error);
+        console.error('submitConversationDetailJob - Error checking job status:', error);
         return `Error checking job status: ${error.message}`;
     }
 
     // Step 3: Fetch job results
     try {
-        console.log(`handleConversationDetailJob - Fetching results for Job ID: ${jobId}`);
+        console.log(`submitConversationDetailJob - Fetching results for Job ID: ${jobId}`);
         const resultsResponse = await apiInstance.getAnalyticsConversationsDetailsJobResults(jobId, {});
-        console.log("handleConversationDetailJob - Job results retrieved successfully.");
+        console.log("submitConversationDetailJob - Job results retrieved successfully.");
         return resultsResponse; // Return the job results
     } catch (error) {
-        console.error('handleConversationDetailJob - Error fetching job results:', error);
+        console.error('submitConversationDetailJob - Error fetching job results:', error);
         return `Error fetching job results: ${error.message}`;
     }
 }
 
-window.handleConversationDetailJob = handleConversationDetailJob;
-console.log("handleConversationDetailJob function attached to window");
+window.submitConversationDetailJob = submitConversationDetailJob;
+console.log("submitConversationDetailJob function attached to window");
