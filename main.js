@@ -41,7 +41,8 @@ function displayMessage(message, isUserMessage) {
     }
 
     chatWindow.appendChild(messageElement);
-    chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to the latest message
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    window.adjustElementStyles();
 }
 
 async function handleUserInput(userMessage, file) {
@@ -192,4 +193,18 @@ async function deleteGenesysGroup(groupId) {
         console.error('Error in deleteGenesysGroup:', error);
         return "Failed to delete group.";
     }
+}
+
+window.adjustElementStyles = function() {
+    const chatWindow = document.getElementById('chat-window');
+    const chatWidth = chatWindow.clientWidth;
+
+    const tables = chatWindow.getElementsByTagName('table');
+    for (let table of tables) {
+        table.style.maxWidth = `${chatWidth - 40}px`; // Adjust 40px for padding
+        table.style.width = '100%';
+        table.style.boxSizing = 'border-box';
+    }
+
+    // Additional adjustments for other elements can be added here
 }
