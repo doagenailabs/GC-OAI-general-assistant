@@ -134,9 +134,10 @@ async function handleConversationDetailJob(jobParams) {
     try {
         console.log("handleConversationDetailJob - Submitting job with params:", jobParams);
         const response = await apiInstance.postAnalyticsConversationsDetailsJobs(jobParams);
-        console.log("handleConversationDetailJob - API response:", response); // Log the entire response
+        console.log("handleConversationDetailJob - API response:", response);
 
-        jobId = response.id; // Assuming the response has an 'id' field with the job ID
+        // Ensure jobId is extracted correctly from the response
+        jobId = response.jobId;
         if (!jobId) {
             console.error("handleConversationDetailJob - No Job ID in response", response);
             return "Error: No Job ID returned from API";
