@@ -159,10 +159,11 @@
                 window.selectedAssistantId = 'queues';
                 selectAssistantAndShowChat();
             });
-            document.getElementById('btn-analytics').addEventListener('click', function() {
-                window.selectedAssistantId = 'analytics';
-                selectAssistantAndShowChat();
-            });            
+	    document.getElementById('btn-analytics').addEventListener('click', function() {
+	        window.selectedAssistantId = 'analytics';
+	        selectAssistantAndShowChat();
+	        setDefaultDateTime();
+	    });       
             document.getElementById('btn-users').addEventListener('click', function() {
                 window.selectedAssistantId = 'users';
                 selectAssistantAndShowChat();
@@ -172,8 +173,7 @@
                 selectAssistantAndShowChat();
             });    
             // event listener for the Submit button in the datetime picker
-            document.getElementById('submit-datetime').addEventListener('click', handleDateTimeSubmission);
-        
+            document.getElementById('submit-datetime').addEventListener('click', handleDateTimeSubmission);        
         });    
 
         function selectAssistantAndShowChat() {
@@ -190,18 +190,27 @@
             }
         }
 
+	function setDefaultDateTime() {
+	    const now = new Date();
+	    const date = now.toISOString().split('T')[0];
+	        
+	    // Set the default time for start-datetime and end-datetime inputs
+	    document.getElementById('start-datetime').value = `${date}T00:00`;
+	    document.getElementById('end-datetime').value = `${date}T00:00`;
+	}	
+
         function clearChatWindow() {
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML = '';
         }
 
-		function handleDateTimeSubmission() {
-			const startDatetime = document.getElementById('start-datetime').value;
-			const endDatetime = document.getElementById('end-datetime').value;
-			// Format the interval as 'YYYY-MM-DDThh:mm:ss/YYYY-MM-DDThh:mm:ss'
-			window.interval = `${startDatetime}/${endDatetime}`;
-			console.log("Interval set for analytics:", window.interval);
-		}
+	function handleDateTimeSubmission() {
+		const startDatetime = document.getElementById('start-datetime').value;
+		const endDatetime = document.getElementById('end-datetime').value;
+		// Format the interval as 'YYYY-MM-DDThh:mm:ss/YYYY-MM-DDThh:mm:ss'
+		window.interval = `${startDatetime}/${endDatetime}`;
+		console.log("Interval set for analytics:", window.interval);
+	}
     </script>
 </body>
 </html>
