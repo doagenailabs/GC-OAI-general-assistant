@@ -47,14 +47,14 @@ async function handleToolCalls(toolCalls, threadId, runId) {
                     console.log(`handleToolCalls - Calling modifyQueueMembers with arguments:`, argsForModifyQueueMembers);
                     resultMessage = await window.modifyQueueMembers(argsForModifyQueueMembers.queueId, argsForModifyQueueMembers.members, argsForModifyQueueMembers.isDelete);
                     break;
-                case 'handleConversationDetailJob':
-                    if (window.handleConversationDetailJob) {
+                case 'submitConversationDetailJob':
+                    if (window.submitConversationDetailJob) {
                         const jobParams = JSON.parse(call.function.arguments);
-                        console.log(`handleToolCalls - Executing handleConversationDetailJob with params:`, jobParams);
-                        resultMessage = await window.handleConversationDetailJob(jobParams);
+                        console.log(`handleToolCalls - Executing submitConversationDetailJob with params:`, jobParams);
+                        resultMessage = await window.submitConversationDetailJob(jobParams);
                     } else {
-                        console.log("handleToolCalls - handleConversationDetailJob function not found in window");
-                        resultMessage = "handleConversationDetailJob function not found";
+                        console.log("handleToolCalls - submitConversationDetailJob function not found in window");
+                        resultMessage = "submitConversationDetailJob function not found";
                     }
                     break;
                 default:
