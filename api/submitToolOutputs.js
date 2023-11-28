@@ -8,10 +8,17 @@ const openai = new OpenAI({
 
 async function submitToolOutputs(req, res) {
     const { threadId, runId, tool_outputs } = req.body;
+
+    // Ensure that outputs are strings
+    const stringifiedToolOutputs = tool_outputs.map(output => ({
+        ...output,
+        output: JSON.stringify(output.output)
+    }));
+
     console.log('Submitting tool outputs for thread:', threadId, 'and run:', runId);
 
     try {
-        const response = await openai.beta.threads.runs.submitToolOutputs(threadId, runId, { tool_outputs });
+        const response = await openai.beta.threads.runs.submitToolOutputs(threadId, runId, { tool_outputs: stringifiedToolOutputs });
         console.log('Tool outputs submitted:', response);
 
         res.json({ message: 'Tool outputs submitted successfully', threadId: threadId, runId: runId });
@@ -30,3 +37,4 @@ async function submitToolOutputs(req, res) {
 }
 
 module.exports = submitToolOutputs;
+
