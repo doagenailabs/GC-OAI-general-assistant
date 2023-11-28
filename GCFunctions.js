@@ -127,13 +127,21 @@ async function handleConversationDetailJob(jobParams) {
         return "Error: Platform client not available";
     }
 
+    // Check if the interval is set
+    if (!window.interval || window.interval.trim() === '') {
+        console.error("handleConversationDetailJob - Interval is not set");
+        // Display a toast to the user indicating that the interval is not selected
+        displayToast("Please select a valid date and time interval.");
+        return "Error: Interval not set";
+    }
+
     let apiInstance = new window.platformClient.AnalyticsApi();
     let jobId;
 
     // Include the interval from the window object into the jobParams
     const updatedJobParams = {
         ...jobParams,
-        interval: window.interval // Overwrite or add the interval parameter
+        interval: window.interval
     };
 
     // Step 1: Submit the job
