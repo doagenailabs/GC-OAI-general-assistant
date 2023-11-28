@@ -123,7 +123,7 @@ window.searchUsers = searchUsers;
 
 async function handleConversationDetailJob(jobParams) {
     if (!window.platformClient) {
-        console.error("Platform client is not available");
+        console.error("handleConversationDetailJob - Platform client is not available");
         return "Error: Platform client not available";
     }
 
@@ -132,49 +132,43 @@ async function handleConversationDetailJob(jobParams) {
 
     // Step 1: Submit the job
     try {
-        console.log("Submitting conversation detail job with params:", jobParams);
+        console.log("handleConversationDetailJob - Submitting job with params:", jobParams);
         const response = await apiInstance.postAnalyticsConversationsDetailsJobs(jobParams);
         jobId = response.id;
-        console.log("Conversation detail job submitted successfully. Job ID:", jobId);
+        console.log(`handleConversationDetailJob - Job submitted successfully. Job ID: ${jobId}`);
     } catch (error) {
-        console.error('Error submitting conversation detail job:', error);
-        return `Error submitting conversation detail job: ${error.message}`;
+        console.error('handleConversationDetailJob - Error submitting job:', error);
+        return `Error submitting job: ${error.message}`;
     }
 
     // Step 2: Poll for job status
     let jobStatus;
     try {
         do {
-            console.log("Polling for job status. Job ID:", jobId);
+            console.log(`handleConversationDetailJob - Polling for status of Job ID: ${jobId}`);
             const statusResponse = await apiInstance.getAnalyticsConversationsDetailsJob(jobId);
             jobStatus = statusResponse.state;
-            console.log("Current job status:", jobStatus);
-            if (jobStatus === "FAILED" || jobStatus === "CANCELLED" || jobStatus === "EXPIRED") {
-                console.log(`Job ended with status: ${jobStatus}`);
-                return `Job ended with status: ${jobStatus}`;
-            }
+            console.log(`handleConversationDetailJob - Current job status: ${jobStatus}`);
             if (jobStatus !== "FULFILLED") {
-                console.log("Job not yet fulfilled. Waiting before next status check...");
                 await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before polling again
             }
         } while (jobStatus !== "FULFILLED");
     } catch (error) {
-        console.error('Error checking job status:', error);
+        console.error('handleConversationDetailJob - Error checking job status:', error);
         return `Error checking job status: ${error.message}`;
     }
 
     // Step 3: Fetch job results
     try {
-        console.log("Fetching job results for Job ID:", jobId);
+        console.log(`handleConversationDetailJob - Fetching results for Job ID: ${jobId}`);
         const resultsResponse = await apiInstance.getAnalyticsConversationsDetailsJobResults(jobId, {});
-        console.log("Job results retrieved successfully.");
+        console.log("handleConversationDetailJob - Job results retrieved successfully.");
         return resultsResponse; // Return the job results
     } catch (error) {
-        console.error('Error fetching job results:', error);
+        console.error('handleConversationDetailJob - Error fetching job results:', error);
         return `Error fetching job results: ${error.message}`;
     }
 }
 
 window.handleConversationDetailJob = handleConversationDetailJob;
-
-
+console.log("handleConversationDetailJob function attached to window");
