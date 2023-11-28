@@ -130,10 +130,16 @@ async function handleConversationDetailJob(jobParams) {
     let apiInstance = new window.platformClient.AnalyticsApi();
     let jobId;
 
+    // Include the interval from the window object into the jobParams
+    const updatedJobParams = {
+        ...jobParams,
+        interval: window.interval // Overwrite or add the interval parameter
+    };
+
     // Step 1: Submit the job
     try {
-        console.log("handleConversationDetailJob - Submitting job with params:", jobParams);
-        const response = await apiInstance.postAnalyticsConversationsDetailsJobs(jobParams);
+        console.log("handleConversationDetailJob - Submitting job with params:", updatedJobParams);
+        const response = await apiInstance.postAnalyticsConversationsDetailsJobs(updatedJobParams);
         console.log("handleConversationDetailJob - API response:", response);
 
         // Ensure jobId is extracted correctly from the response
