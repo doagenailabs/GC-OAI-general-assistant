@@ -106,18 +106,24 @@
 
             submitDateTimeButton.addEventListener('click', () => handleDateTimeSubmission());
 
-            function sendMessage() {
-                const userMessage = inputElement.value;
-                const fileInput = document.getElementById('file-input');
-                const file = fileInput.files[0];
-            
-                if (userMessage.trim() !== '' || file) {
-                    handleUserMessage(userMessage, file);
-                    inputElement.value = '';
-                    fileInput.value = null;
-                    handleUserInput(userMessage, file);
-                }
-            }
+	    function sendMessage() {
+	        // Check if the selected assistant is 'analytics' and the interval is not set
+	        if (window.selectedAssistantId === 'analytics' && (!window.interval || window.interval.trim() === '')) {
+	            alert('Please select a valid date and time interval.');
+	            return;
+	        }
+	
+	        const userMessage = document.getElementById('chat-input').value;
+	        const fileInput = document.getElementById('file-input');
+	        const file = fileInput.files[0];
+	    
+	        if (userMessage.trim() !== '' || file) {
+	            handleUserMessage(userMessage, file);
+	            document.getElementById('chat-input').value = '';
+	            fileInput.value = null;
+	            handleUserInput(userMessage, file);
+	        }
+	    }
 
             document.getElementById('deleteConversationBtn').addEventListener('click', async () => {
                 try {
