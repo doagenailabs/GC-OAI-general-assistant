@@ -130,8 +130,6 @@ async function handleConversationDetailJob(jobParams) {
     // Check if the interval is set
     if (!window.interval || window.interval.trim() === '') {
         console.error("handleConversationDetailJob - Interval is not set");
-        // Display a toast to the user indicating that the interval is not selected
-        alert("Please select a valid date and time interval.");
         return "Error: Interval not set";
     }
 
