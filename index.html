@@ -28,16 +28,17 @@
         <button id="btn-triggers">Triggers</button>
     </div>
 
+    <!-- DateTime Picker for Analytics Assistant -->
+    <div id="datetime-picker-container" style="display: none;">
+        <input type="datetime-local" id="start-datetime" />
+        <input type="datetime-local" id="end-datetime" />
+        <button id="submit-datetime">Submit</button>
+    </div>
+
     <!-- Existing chat UI, initially hidden -->
     <div id="chat-ui" style="display: none;">
         <div id="logo-container">
             <img src="assets/images/GC_logo.png" alt="Genesys Cloud Logo" id="gc-logo">
-        </div>
-
-        <div id="datetime-picker-container" style="display: none;">
-            <input type="datetime-local" id="start-datetime" />
-            <input type="datetime-local" id="end-datetime" />
-            <button id="submit-datetime">Submit</button>
         </div>
 
         <div id="chat-container">
@@ -91,6 +92,7 @@
 
             const inputElement = document.getElementById('chat-input');
             const sendButton = document.getElementById('send-button');
+            const submitDateTimeButton = document.getElementById('submit-datetime');
 
             sendButton.addEventListener('click', () => sendMessage());
     
@@ -100,6 +102,8 @@
                     sendMessage();
                 }
             });
+
+            submitDateTimeButton.addEventListener('click', () => handleDateTimeSubmission());
 
             function sendMessage() {
                 const userMessage = inputElement.value;
@@ -155,19 +159,37 @@
                 window.selectedAssistantId = 'triggers';
                 selectAssistantAndShowChat();
             });    
+            // event listener for the Submit button in the datetime picker
+            document.getElementById('submit-datetime').addEventListener('click', handleDateTimeSubmission);
         
         });    
 
         function selectAssistantAndShowChat() {
-            console.log('Selected assistand id: ', window.selectedAssistantId);
+            console.log('Selected assistant id:', window.selectedAssistantId);
             document.getElementById('initial-ui').style.display = 'none';
             document.getElementById('chat-ui').style.display = 'block';
+
+            // Show datetime picker if analytics assistant is selected
+            const datetimePickerContainer = document.getElementById('datetime-picker-container');
+            if (window.selectedAssistantId === 'analytics') {
+                datetimePickerContainer.style.display = 'flex';
+            } else {
+                datetimePickerContainer.style.display = 'none';
+            }
         }
 
         function clearChatWindow() {
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML = '';
         }
+
+		function handleDateTimeSubmission() {
+			const startDatetime = document.getElementById('start-datetime').value;
+			const endDatetime = document.getElementById('end-datetime').value;
+			// Format the interval as 'YYYY-MM-DDThh:mm:ss/YYYY-MM-DDThh:mm:ss'
+			window.interval = `${startDatetime}/${endDatetime}`;
+			console.log("Interval set for analytics:", window.interval);
+		}
     </script>
 </body>
 </html>
