@@ -120,17 +120,17 @@ body, html {
     display: none; 
     color: #28a745; 
     margin-left: 10px;
-    background-color: #dff0d8;
+    background-color: #dff0d8; 
     border: 1px solid #d4edda;
     border-radius: 5px;
     padding: 5px 10px;
     font-size: 14px;
     transition: opacity 0.5s ease-in-out;
-    opacity: 0;
+    opacity: 0; 
 }
 
 #save-notification.show {
-    display: block;
+    display: block; 
     opacity: 1; 
 }
 
