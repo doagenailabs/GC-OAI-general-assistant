@@ -44,6 +44,7 @@
 	        <input type="datetime-local" id="start-datetime" />
 	        <input type="datetime-local" id="end-datetime" />
 	        <button id="submit-datetime">Save interval</button>
+		<div id="save-notification" style="display: none; color: green; margin-left: 10px;">Saved</div>
 	    </div>
 	
 	    <!-- Chat Container -->
@@ -205,14 +206,24 @@
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML = '';
         }
-
+	    
 	function handleDateTimeSubmission() {
-		const startDatetime = document.getElementById('start-datetime').value;
-		const endDatetime = document.getElementById('end-datetime').value;
-		// Format the interval as 'YYYY-MM-DDThh:mm:ss/YYYY-MM-DDThh:mm:ss'
-		window.interval = `${startDatetime}/${endDatetime}`;
-		console.log("Interval set for analytics:", window.interval);
+	    const startDatetime = document.getElementById('start-datetime').value;
+	    const endDatetime = document.getElementById('end-datetime').value;
+	    // Format the interval as 'YYYY-MM-DDThh:mm:ss/YYYY-MM-DDThh:mm:ss'
+	    window.interval = `${startDatetime}/${endDatetime}`;
+	    console.log("Interval set for analytics:", window.interval);
+	
+	    // Show the 'Saved' notification
+	    const saveNotification = document.getElementById('save-notification');
+	    saveNotification.style.display = 'block';
+	
+	    // Optionally, hide the notification after a few seconds
+	    setTimeout(() => {
+	        saveNotification.style.display = 'none';
+	    }, 2000); // Hide after 2 seconds
 	}
+
     </script>
 </body>
 </html>
