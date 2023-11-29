@@ -7,8 +7,14 @@ const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
 
 function extractAndSanitizeHTML(input) {
-    // Sanitize the input as it is, assuming it's already in HTML format
-    const cleanHTML = DOMPurify.sanitize(input, { ADD_TAGS: ["html"] });
+    // Replace Markdown-style bold with HTML <strong> tags
+    let processedHTML = input.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+    // Replace \n characters with HTML <br> for line breaks
+    processedHTML = processedHTML.replace(/\n/g, '<br>');
+
+    // Sanitize the processed HTML
+    const cleanHTML = DOMPurify.sanitize(processedHTML, { ADD_TAGS: ["html", "br", "strong"] });
 
     // Replace escaped HTML tags back to their original form if they were escaped
     const unescapedHTML = cleanHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
