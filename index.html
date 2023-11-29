@@ -216,14 +216,14 @@
 	
 	    // Show the 'Saved' notification
 	    const saveNotification = document.getElementById('save-notification');
-	    saveNotification.style.display = 'block';
+	    saveNotification.classList.add('show');
 	
-	    // Optionally, hide the notification after a few seconds
+	    // Hide the notification after a few seconds
 	    setTimeout(() => {
-	        saveNotification.style.display = 'none';
+	        saveNotification.classList.remove('show');
 	    }, 2000); // Hide after 2 seconds
 	}
-
+	    
     </script>
 </body>
 </html>
