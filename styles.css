@@ -93,7 +93,7 @@ body, html {
     justify-content: center;
     align-items: center;
     padding: 10px;
-    margin-bottom: 20px; /* Add margin to space it from the chat container */
+    margin-bottom: 20px;
 }
 
 #datetime-picker-container input[type="datetime-local"] {
@@ -114,6 +114,24 @@ body, html {
 
 #submit-datetime:hover {
     background-color: #0056b3;
+}
+
+#save-notification {
+    display: none; 
+    color: #28a745; 
+    margin-left: 10px;
+    background-color: #dff0d8;
+    border: 1px solid #d4edda;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+}
+
+#save-notification.show {
+    display: block;
+    opacity: 1; 
 }
 
 /* Chat Container Styles */
