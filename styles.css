@@ -120,7 +120,7 @@ body, html {
     display: none; 
     color: #28a745; 
     margin-left: 10px;
-    background-color: #dff0d8; 
+    background-color: #dff0d8;
     border: 1px solid #d4edda;
     border-radius: 5px;
     padding: 5px 10px;
@@ -131,7 +131,7 @@ body, html {
 
 #save-notification.show {
     display: block; 
-    opacity: 1; 
+    opacity: 1;
 }
 
 /* Chat Container Styles */
