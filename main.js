@@ -70,16 +70,37 @@ async function handleUserInput(userMessage, file) {
                 method: 'POST',
                 body: formData
             });
-
+        
             if (!visionResponse.ok) {
                 throw new Error(`Vision processing failed: ${visionResponse.statusText}`);
             }
-
+        
             const visionData = await visionResponse.json();
             console.log('Vision data:', visionData);
-            // You might need to process and display the response from the vision API here.
-            // This is dependent on how your vision API and UI are designed.
-
+        
+            // Extracting the response from the Vision API
+            const visionApiResult = visionData.choices[0].message.content; 
+            console.log('Extracted Vision API Result:', visionApiResult);
+        
+            // Using the extracted response as input for the Flows assistant
+            window.selectedAssistantId = 'flows';
+            const flowsResponse = await fetch('/api/runAssistant', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    threadId: threadId,
+                    assistantType: window.selectedAssistantId,
+                    instructions: visionApiResult
+                })
+            }).then(response => response.json());
+        
+            // Display the response from the Flows assistant
+            if (flowsResponse.choices && flowsResponse.choices.length > 0) {
+                const flowsAssistantResponse = flowsResponse.choices[0].message.content;
+                displayMessage(flowsAssistantResponse, false);
+            } else {
+                console.error('Flows assistant did not return a valid response');
+            }
         } else if (file) {
             // Handle non-image file - call uploadFile API
             console.log('Uploading file:', file.name);
