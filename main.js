@@ -61,7 +61,27 @@ async function handleUserInput(userMessage, file) {
         }
 
         let fileID = null;
-        if (file) {
+        if (file && isImage(file)) {
+            // Handle image file - call runVision API
+            console.log('Processing image file:', file.name);
+            const formData = new FormData();
+            formData.append('file', file);
+            const visionResponse = await fetch('/api/runVision', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!visionResponse.ok) {
+                throw new Error(`Vision processing failed: ${visionResponse.statusText}`);
+            }
+
+            const visionData = await visionResponse.json();
+            console.log('Vision data:', visionData);
+            // You might need to process and display the response from the vision API here.
+            // This is dependent on how your vision API and UI are designed.
+
+        } else if (file) {
+            // Handle non-image file - call uploadFile API
             console.log('Uploading file:', file.name);
             const formData = new FormData();
             formData.append('file', file);
@@ -147,6 +167,9 @@ async function handleUserInput(userMessage, file) {
     }
 }
 
+function isImage(file) {
+    return file && file.type.match(/^image\/(png|jpeg|jpg)$/);
+}
 
 function showLoadingIcon(show) {
     const loadingIcon = document.getElementById('loading-icon');
