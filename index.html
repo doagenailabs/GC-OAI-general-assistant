@@ -173,7 +173,12 @@
             document.getElementById('btn-triggers').addEventListener('click', function() {
                 window.selectedAssistantId = 'triggers';
                 selectAssistantAndShowChat();
-            });    
+            });
+	    document.getElementById('btn-flows').addEventListener('click', function() {
+	        window.selectedAssistantId = 'flows';
+	        selectAssistantAndShowChat();
+	    });
+		
             // event listener for the Submit button in the datetime picker
             document.getElementById('submit-datetime').addEventListener('click', handleDateTimeSubmission);        
 	    // Attach resize event listener
