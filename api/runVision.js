@@ -5,6 +5,8 @@ const multiparty = require('multiparty');
 // Import environment variables
 const apiKey = process.env.OPENAI_API_KEY;
 const visionModel = process.env.OPENAI_VISION_MODEL;
+const userMessage = "What's in this image?";
+const systemMessage = "The image contains a contact center flow to serve customers. Describe with most accuracy possible the process in the flow. The words you produce will be used by another LLM as input for another task";
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -48,11 +50,11 @@ async function runVision(req, res) {
                 messages: [
                     {
                         role: "user",
-                        content: [{ type: "text", text: "What's in this image?" }]
+                        content: [{ type: "text", text: userMessage }]
                     },
                     {
                         role: "system",
-                        content: [{ type: "text", text: "The image contains a contact center flow to serve customers. Describe with most accuracy possible the process in the flow. The words you produce will be used by another LLM as input for another task." }]
+                        content: [{ type: "text", text: systemMessage }]
                     },
                     {
                         role: "user",
