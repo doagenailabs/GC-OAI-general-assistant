@@ -18,7 +18,7 @@ function encodeImage(imagePath) {
 
 // Function to handle vision API requests
 async function runVision(req, res) {
-    const { imageFilePath, question } = req.body;
+    const { imageFilePath } = req.body;
 
     // Check if the image file exists
     if (!fs.existsSync(imageFilePath)) {
@@ -28,6 +28,9 @@ async function runVision(req, res) {
     // Encode the image to base64
     const imageBase64 = encodeImage(imageFilePath);
     const imageUrl = `data:image/jpeg;base64,${imageBase64}`;
+    const userMessage = "What's in the image?"
+    const systemMessage = "The image contains a contact center flow to serve customers. Describe with most accuracy possible the process in the flow. The words you produce will be used by another LLM as input for another task.";
+    
 
     try {
         const response = await openai.chat.completions.create({
@@ -35,10 +38,17 @@ async function runVision(req, res) {
             messages: [
                 {
                     role: "user",
+                    content: [{ type: "text", text: userMessage }]
+                },
+                {
+                    role: "system",
                     content: [
-                        { type: "text", text: question },
-                        { type: "image_url", image_url: { url: imageUrl } }
+                        { type: "text", text: systemMessage }
                     ]
+                },
+                {
+                    role: "user",
+                    content: [{ type: "image_url", image_url: { url: imageUrl } }]
                 }
             ],
             max_tokens: 300
