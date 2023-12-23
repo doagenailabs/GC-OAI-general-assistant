@@ -7,6 +7,7 @@ const queueAssistantId = process.env.OPENAI_QUEUE_ASSISTANT_ID;
 const userAssistantId = process.env.OPENAI_USER_ASSISTANT_ID;
 const triggersAssistantId = process.env.OPENAI_TRIGGER_ASSISTANT_ID;
 const analyticsAssistantId = process.env.OPENAI_ANALYTICS_ASSISTANT_ID;
+const flowsAssistantId = process.env.OPENAI_FLOWS_ASSISTANT_ID;
 
 const openai = new OpenAI({
     apiKey: apiKey
@@ -32,6 +33,9 @@ async function runAssistant(req, res) {
             break;
         case 'analytics':
             assistantId = analyticsAssistantId;
+            break;
+        case 'flows':
+            assistantId = flowsAssistantId;
             break;            
         default:
             // Default assistant ID if none is specified
